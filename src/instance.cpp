@@ -59,10 +59,10 @@ void Instance::setTransportationCosts(const std::vector<std::vector<double>>& tr
     this->transportationCosts = transportationCosts;
 }
 
-void Instance::setBestSolution(const Solution& solution) {
-    bestSolution = solution;
-}
-
 const Solution& Instance::getBestSolution() const {
     return bestSolution;
+}
+
+void Instance::setBestSolution(const Solution& bestSolution) {
+    this->bestSolution = bestSolution;
 }
