@@ -4,6 +4,8 @@
 #include <vector>
 #include <cstdint>
 
+class Instance; // Forward declaration
+
 /**
  * @brief Class representing a solution for the Capacitated Facility Location Problem.
  */
@@ -68,6 +70,13 @@ public:
      * @return false If the solutions are different.
      */
     bool operator==(const Solution& other) const;
+
+    /**
+     * @brief Calculate the cost of the solution given an instance.
+     * 
+     * @param instance The instance for which to calculate the solution cost.
+     */
+    void calculateCost(const Instance& instance);
 
 private:
     double cost; ///< The cost of the solution.
