@@ -1,5 +1,6 @@
 #include "CapacityFacilityLocationProblem/solution.h"
 #include "CapacityFacilityLocationProblem/instance.h"
+#include <sstream>
 
 Solution::Solution(double cost, const std::vector<uint8_t>& y, const std::vector<std::vector<uint8_t>>& x)
     : cost(cost), y(y), x(x) {}
@@ -54,4 +55,26 @@ void Solution::calculateCost(const Instance& instance) {
     }
     
     setCost(totalCost);
+}
+
+std::string Solution::toString() const {
+    std::ostringstream oss;
+    oss << "Total Cost: " << cost << "\n";
+    oss << "Warehouses: \n";
+    for (size_t i = 0; i < y.size(); ++i) {
+        if (y[i] == 1) {
+            oss << "Warehouse " << i + 1 << " is open\n";
+        }
+    }
+    oss << "Customer Assignments: \n";
+    for (size_t j = 0; j < x[0].size(); ++j) {
+        oss << "Customer " << j + 1 << " is served by: ";
+        for (size_t i = 0; i < x.size(); ++i) {
+            if (x[i][j] == 1) {
+                oss << "Warehouse " << i + 1 << " ";
+            }
+        }
+        oss << "\n";
+    }
+    return oss.str();
 }
