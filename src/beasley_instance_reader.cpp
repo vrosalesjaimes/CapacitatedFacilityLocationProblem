@@ -12,7 +12,6 @@
 Instance BeasleyInstanceReader::readInstance(const std::string& filename) const {
     std::ifstream file(filename);
     if (!file.is_open()) {
-        std::cerr << "no se encuentra: " << filename << std::endl;
         throw std::runtime_error("Unable to open file");
     }
 

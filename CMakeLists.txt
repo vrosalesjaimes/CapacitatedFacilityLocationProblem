@@ -13,6 +13,9 @@ include_directories(include)
 # Añadir subdirectorios
 add_subdirectory(src)
 
+# Copiar directorio de instancias a la carpeta de compilación
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/instances DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+
 # Generar documentación con Doxygen
 find_package(Doxygen)
 if (DOXYGEN_FOUND)
