@@ -1,7 +1,7 @@
 #ifndef BEASLEYINSTANCEREADER_H
 #define BEASLEYINSTANCEREADER_H
 
-#include "CapacityFacilityLocationProblem/instance_reader.h"
+#include "Reader/instance_reader.h"
 #include <vector>
 
 /**

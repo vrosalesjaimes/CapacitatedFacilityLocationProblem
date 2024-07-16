@@ -1,13 +1,13 @@
-#ifndef YANGINSTANCEREADER_H
-#define YANGINSTANCEREADER_H
+#ifndef TBEDINSTANCEREADER_H
+#define TBEDINSTANCEREADER_H
 
-#include "CapacityFacilityLocationProblem/instance_reader.h"
+#include "Reader/instance_reader.h"
 #include <vector>
 
 /**
- * @brief Class for reading Yang instances of the Capacitated Facility Location Problem.
+ * @brief Class for reading TBED instances of the Capacitated Facility Location Problem.
  */
-class YangInstanceReader : public InstanceReader {
+class TBEDInstanceReader : public InstanceReader {
 public:
     /**
      * @brief Reads an instance from a file.
@@ -18,4 +18,4 @@ public:
     Instance readInstance(const std::string& filename) const override;
 };
 
-#endif // YANGINSTANCEREADER_H
+#endif // TBEDINSTANCEREADER_H

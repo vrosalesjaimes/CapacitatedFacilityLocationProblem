@@ -1,5 +1,5 @@
-#include "CapacityFacilityLocationProblem/solution.h"
-#include "CapacityFacilityLocationProblem/instance.h"
+#include "CapacitedFacilityLocationProblem/solution.h"
+#include "CapacitedFacilityLocationProblem/instance.h"
 #include <sstream>
 
 Solution::Solution(double cost, const std::vector<uint8_t>& y, const std::vector<std::vector<uint8_t>>& x)

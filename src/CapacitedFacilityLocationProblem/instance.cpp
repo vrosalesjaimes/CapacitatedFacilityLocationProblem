@@ -1,4 +1,4 @@
-#include "CapacityFacilityLocationProblem/instance.h"
+#include "CapacitedFacilityLocationProblem/instance.h"
 
 Instance::Instance(int numFacilities, int numCustomers, 
                    const std::vector<int>& facilityCapacities, 

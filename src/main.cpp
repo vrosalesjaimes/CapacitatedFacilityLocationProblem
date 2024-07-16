@@ -1,6 +1,6 @@
 #include <iostream>
-#include "CapacityFacilityLocationProblem/instance.h"
-#include "CapacityFacilityLocationProblem/solution.h"
+#include "CapacitedFacilityLocationProblem/instance.h"
+#include "CapacitedFacilityLocationProblem/solution.h"
 
 int main() {
     std::vector<int> facilityCapacities = {100, 150, 200};

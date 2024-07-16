@@ -1,15 +1,14 @@
-#include "CapacityFacilityLocationProblem/beasley_instance_reader.h"
+#include "Reader/yang_instance_reader.h"
 #include <fstream>
 #include <sstream>
-#include <iostream>
 
 /**
- * @brief Reads a Beasley instance from a file.
+ * @brief Reads a Yang instance from a file.
  * 
  * @param filename The name of the file containing the instance data.
  * @return Instance The read instance.
  */
-Instance BeasleyInstanceReader::readInstance(const std::string& filename) const {
+Instance YangInstanceReader::readInstance(const std::string& filename) const {
     std::ifstream file(filename);
     if (!file.is_open()) {
         throw std::runtime_error("Unable to open file");
@@ -25,10 +24,13 @@ Instance BeasleyInstanceReader::readInstance(const std::string& filename) const 
     }
 
     std::vector<int> customerDemands(numCustomers);
-    std::vector<std::vector<double>> transportationCosts(numFacilities, std::vector<double>(numCustomers));
     for (int j = 0; j < numCustomers; ++j) {
         file >> customerDemands[j];
-        for (int i = 0; i < numFacilities; ++i) {
+    }
+
+    std::vector<std::vector<double>> transportationCosts(numFacilities, std::vector<double>(numCustomers));
+    for (int i = 0; i < numFacilities; ++i) {
+        for (int j = 0; j < numCustomers; ++j) {
             file >> transportationCosts[i][j];
         }
     }

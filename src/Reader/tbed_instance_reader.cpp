@@ -1,14 +1,14 @@
-#include "CapacityFacilityLocationProblem/yang_instance_reader.h"
+#include "Reader/tbed_instance_reader.h"
 #include <fstream>
 #include <sstream>
 
 /**
- * @brief Reads a Yang instance from a file.
+ * @brief Reads a TBED instance from a file.
  * 
  * @param filename The name of the file containing the instance data.
  * @return Instance The read instance.
  */
-Instance YangInstanceReader::readInstance(const std::string& filename) const {
+Instance TBEDInstanceReader::readInstance(const std::string& filename) const {
     std::ifstream file(filename);
     if (!file.is_open()) {
         throw std::runtime_error("Unable to open file");
@@ -17,15 +17,19 @@ Instance YangInstanceReader::readInstance(const std::string& filename) const {
     int numFacilities, numCustomers;
     file >> numFacilities >> numCustomers;
 
-    std::vector<int> facilityCapacities(numFacilities);
-    std::vector<double> openingCosts(numFacilities);
-    for (int i = 0; i < numFacilities; ++i) {
-        file >> facilityCapacities[i] >> openingCosts[i];
-    }
-
     std::vector<int> customerDemands(numCustomers);
     for (int j = 0; j < numCustomers; ++j) {
         file >> customerDemands[j];
+    }
+
+    std::vector<int> facilityCapacities(numFacilities);
+    for (int i = 0; i < numFacilities; ++i) {
+        file >> facilityCapacities[i];
+    }
+
+    std::vector<double> openingCosts(numFacilities);
+    for (int i = 0; i < numFacilities; ++i) {
+        file >> openingCosts[i];
     }
 
     std::vector<std::vector<double>> transportationCosts(numFacilities, std::vector<double>(numCustomers));

@@ -1,7 +1,7 @@
 #ifndef HOLMBERGINSTANCEREADER_H
 #define HOLMBERGINSTANCEREADER_H
 
-#include "CapacityFacilityLocationProblem/instance_reader.h"
+#include "Reader/instance_reader.h"
 #include <vector>
 
 /**
