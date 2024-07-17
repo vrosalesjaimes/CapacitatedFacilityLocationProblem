@@ -1,5 +1,5 @@
 # Añadir el ejecutable
-add_executable(CapacityFacilityLocationProblem  main.cpp
+add_executable(CapacitedFacilityLocationProblem  main.cpp
                                                 CapacitedFacilityLocationProblem/instance.cpp
                                                 CapacitedFacilityLocationProblem/solution.cpp
                                                 Reader/beasley_instance_reader.cpp
