@@ -2,7 +2,7 @@
 #define INSTANCE_H
 
 #include <vector>
-#include "CapacitedFacilityLocationProblem/solution.h"
+#include "solution.h"
 
 /**
  * @brief Class representing an instance of the Capacitated Facility Location Problem.

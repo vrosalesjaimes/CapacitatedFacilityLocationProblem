@@ -1,6 +1,7 @@
 #include "CapacitedFacilityLocationProblem/solution.h"
 #include "CapacitedFacilityLocationProblem/instance.h"
 #include <sstream>
+#include <iomanip>
 
 Solution::Solution(double cost, const std::vector<uint8_t>& y, const std::vector<std::vector<uint8_t>>& x)
     : cost(cost), y(y), x(x) {}
@@ -35,21 +36,16 @@ bool Solution::operator==(const Solution& other) const {
 
 void Solution::calculateCost(const Instance& instance) {
     double totalCost = 0.0;
-    
-    // Calculate opening costs
     const auto& openingCosts = instance.getOpeningCosts();
+    const auto& transportationCosts = instance.getTransportationCosts();
+    
     for (size_t i = 0; i < y.size(); ++i) {
         if (y[i] == 1) {
             totalCost += openingCosts[i];
-        }
-    }
-    
-    // Calculate transportation costs
-    const auto& transportationCosts = instance.getTransportationCosts();
-    for (size_t i = 0; i < x.size(); ++i) {
-        for (size_t j = 0; j < x[i].size(); ++j) {
-            if (x[i][j] == 1) {
-                totalCost += transportationCosts[i][j];
+            for (size_t j = 0; j < x[i].size(); ++j) {
+                if (x[i][j] == 1) {
+                    totalCost += transportationCosts[i][j];
+                }
             }
         }
     }
@@ -58,23 +54,18 @@ void Solution::calculateCost(const Instance& instance) {
 }
 
 std::string Solution::toString() const {
-    std::ostringstream oss;
-    oss << "Total Cost: " << cost << "\n";
-    oss << "Warehouses: \n";
-    for (size_t i = 0; i < y.size(); ++i) {
-        if (y[i] == 1) {
-            oss << "Warehouse " << i + 1 << " is open\n";
-        }
+    std::stringstream ss;
+    ss << std::fixed << std::setprecision(2);
+    ss << "Cost: " << cost << "\nY: ";
+    for (const auto& val : y) {
+        ss << static_cast<int>(val) << " ";
     }
-    oss << "Customer Assignments: \n";
-    for (size_t j = 0; j < x[0].size(); ++j) {
-        oss << "Customer " << j + 1 << " is served by: ";
-        for (size_t i = 0; i < x.size(); ++i) {
-            if (x[i][j] == 1) {
-                oss << "Warehouse " << i + 1 << " ";
-            }
+    ss << "\nX:\n";
+    for (const auto& row : x) {
+        for (const auto& val : row) {
+            ss << static_cast<int>(val) << " ";
         }
-        oss << "\n";
+        ss << "\n";
     }
-    return oss.str();
+    return ss.str();
 }

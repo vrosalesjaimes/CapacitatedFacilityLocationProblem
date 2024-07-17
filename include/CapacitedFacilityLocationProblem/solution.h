@@ -10,8 +10,7 @@ class Instance; // Forward declaration
 /**
  * @brief Class representing a solution for the Capacitated Facility Location Problem.
  */
-class Solution
-{
+class Solution {
 public:
     /**
      * @brief Constructor for Solution.
@@ -20,7 +19,7 @@ public:
      * @param y Vector indicating if there is a warehouse at site i (1 or 0).
      * @param x Matrix indicating if customer j is served by warehouse i (1 or 0).
      */
-    Solution(double cost, const std::vector<uint8_t> &y, const std::vector<std::vector<uint8_t>> &x);
+    Solution(double cost, const std::vector<uint8_t>& y, const std::vector<std::vector<uint8_t>>& x);
 
     /**
      * @brief Gets the cost of the solution.
@@ -41,28 +40,28 @@ public:
      *
      * @return const std::vector<uint8_t>& The warehouse assignment vector.
      */
-    const std::vector<uint8_t> &getY() const;
+    const std::vector<uint8_t>& getY() const;
 
     /**
      * @brief Sets the warehouse assignment vector.
      *
      * @param y The new warehouse assignment vector.
      */
-    void setY(const std::vector<uint8_t> &y);
+    void setY(const std::vector<uint8_t>& y);
 
     /**
      * @brief Gets the customer assignment matrix.
      *
      * @return const std::vector<std::vector<uint8_t>>& The customer assignment matrix.
      */
-    const std::vector<std::vector<uint8_t>> &getX() const;
+    const std::vector<std::vector<uint8_t>>& getX() const;
 
     /**
      * @brief Sets the customer assignment matrix.
      *
      * @param x The new customer assignment matrix.
      */
-    void setX(const std::vector<std::vector<uint8_t>> &x);
+    void setX(const std::vector<std::vector<uint8_t>>& x);
 
     /**
      * @brief Compares two solutions.
@@ -71,14 +70,14 @@ public:
      * @return true If the solutions are equal.
      * @return false If the solutions are different.
      */
-    bool operator==(const Solution &other) const;
+    bool operator==(const Solution& other) const;
 
     /**
      * @brief Calculate the cost of the solution given an instance.
      *
      * @param instance The instance for which to calculate the solution cost.
      */
-    void calculateCost(const Instance &instance);
+    void calculateCost(const Instance& instance);
 
     /**
      * @brief Converts the solution to a string representation.
