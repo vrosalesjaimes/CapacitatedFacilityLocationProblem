@@ -2,9 +2,10 @@
 #include "CapacitedFacilityLocationProblem/instance.h"
 #include <sstream>
 #include <iomanip>
+#include <numeric>
 
 Solution::Solution(double cost, const std::vector<uint8_t>& y, const std::vector<std::vector<uint8_t>>& x)
-    : cost(cost), y(y), x(x) {}
+    : cost(cost), y(y), x(x), totalDemand(0), demandCalculated(false) {}
 
 double Solution::getCost() const {
     return cost;
@@ -68,4 +69,23 @@ std::string Solution::toString() const {
         ss << "\n";
     }
     return ss.str();
+}
+
+int Solution::calculateTotalDemand(const Instance& instance) {
+    if (!demandCalculated) {
+        const auto& customerDemands = instance.getCustomerDemands();
+        totalDemand = std::accumulate(customerDemands.begin(), customerDemands.end(), 0);
+        demandCalculated = true;
+    }
+    return totalDemand;
+}
+
+bool Solution::isFeasible(const Instance& instance) {
+    int totalCapacity = 0;
+    for (size_t i = 0; i < y.size(); ++i) {
+        if (y[i] == 1) {
+            totalCapacity += instance.getFacilityCapacities()[i];
+        }
+    }
+    return totalCapacity >= calculateTotalDemand(instance);
 }

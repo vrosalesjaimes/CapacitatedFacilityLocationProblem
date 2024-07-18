@@ -86,10 +86,29 @@ public:
      */
     std::string toString() const;
 
+    /**
+     * @brief Checks if the solution is feasible.
+     *
+     * @param instance The instance to check the solution against.
+     * @return true If the solution is feasible.
+     * @return false If the solution is not feasible.
+     */
+    bool isFeasible(const Instance& instance);
+
 private:
+    /**
+     * @brief Calculates the total demand of customers.
+     *
+     * @param instance The instance to calculate the demand from.
+     * @return int The total demand.
+     */
+    int calculateTotalDemand(const Instance& instance);
+
     double cost;                         ///< The cost of the solution.
     std::vector<uint8_t> y;              ///< Warehouse assignment vector.
     std::vector<std::vector<uint8_t>> x; ///< Customer assignment matrix.
+    int totalDemand;                     ///< Total demand of customers.
+    bool demandCalculated;               ///< Flag to check if the total demand has been calculated.
 };
 
 #endif // SOLUTION_H
