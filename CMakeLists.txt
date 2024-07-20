@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.10)
 
 # Nombre del proyecto
-project(CapacitedFacilityLocationProblem VERSION 1.0)
+project(CapacitatedFacilityLocationProblem VERSION 1.0)
 
 # Establecer el estándar de C++
 set(CMAKE_CXX_STANDARD 17)

@@ -2,7 +2,7 @@
 #define INSTANCEREADER_H
 
 #include <string>
-#include "CapacitedFacilityLocationProblem/instance.h"
+#include "CapacitatedFacilityLocationProblem/instance.h"
 
 /**
  * @brief Abstract base class for reading instances of the Capacitated Facility Location Problem.

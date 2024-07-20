@@ -1,5 +1,5 @@
 #include "Reader/beasley_instance_reader.h"
-#include "CapacitedFacilityLocationProblem/initializer.h"
+#include "CapacitatedFacilityLocationProblem/initializer.h"
 #include <iostream>
 
 int main() {

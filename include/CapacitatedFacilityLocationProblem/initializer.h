@@ -1,8 +1,8 @@
 #ifndef INITIALIZER_H
 #define INITIALIZER_H
 
-#include "CapacitedFacilityLocationProblem/instance.h"
-#include "CapacitedFacilityLocationProblem/solution.h"
+#include "CapacitatedFacilityLocationProblem/instance.h"
+#include "CapacitatedFacilityLocationProblem/solution.h"
 #include <vector>
 #include <utility>
 

@@ -1,4 +1,4 @@
-#include "CapacitedFacilityLocationProblem/instance.h"
+#include "CapacitatedFacilityLocationProblem/instance.h"
 #include <stdexcept>
 
 Instance::Instance(int numFacilities, int numCustomers, 

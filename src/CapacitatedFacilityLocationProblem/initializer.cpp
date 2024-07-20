@@ -1,4 +1,4 @@
-#include "CapacitedFacilityLocationProblem/initializer.h"
+#include "CapacitatedFacilityLocationProblem/initializer.h"
 #include <algorithm>
 #include <numeric>
 #include <limits> 

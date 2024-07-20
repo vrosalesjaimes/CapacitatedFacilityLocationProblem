@@ -1,8 +1,8 @@
 # Añadir el ejecutable
-add_executable(CapacitedFacilityLocationProblem main.cpp
-                                                CapacitedFacilityLocationProblem/initializer.cpp
-                                                CapacitedFacilityLocationProblem/instance.cpp
-                                                CapacitedFacilityLocationProblem/solution.cpp
+add_executable(CapacitatedFacilityLocationProblem main.cpp
+                                                CapacitatedFacilityLocationProblem/initializer.cpp
+                                                CapacitatedFacilityLocationProblem/instance.cpp
+                                                CapacitatedFacilityLocationProblem/solution.cpp
                                                 Reader/beasley_instance_reader.cpp
                                                 Reader/holmberg_instance_reader.cpp
                                                 Reader/tbed_instance_reader.cpp

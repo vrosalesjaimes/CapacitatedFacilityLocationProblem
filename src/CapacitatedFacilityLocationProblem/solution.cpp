@@ -1,5 +1,5 @@
-#include "CapacitedFacilityLocationProblem/solution.h"
-#include "CapacitedFacilityLocationProblem/instance.h"
+#include "CapacitatedFacilityLocationProblem/solution.h"
+#include "CapacitatedFacilityLocationProblem/instance.h"
 #include <sstream>
 #include <iomanip>
 #include <numeric>
