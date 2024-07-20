@@ -1,47 +1,69 @@
 #ifndef INITIALIZER_H
 #define INITIALIZER_H
 
+#include "CapacitedFacilityLocationProblem/instance.h"
+#include "CapacitedFacilityLocationProblem/solution.h"
 #include <vector>
-#include "instance.h"
-#include "solution.h"
+#include <utility>
 
 /**
- * @brief Class for initializing a solution to the Capacitated Facility Location Problem.
+ * @brief Class for initializing solutions for the Capacitated Facility Location Problem.
  */
 class Initializer {
 public:
     /**
      * @brief Constructor for Initializer.
      * 
-     * @param instance The instance of the Capacitated Facility Location Problem.
+     * @param instance Reference to the instance of the problem.
      */
     Initializer(const Instance& instance);
 
     /**
-     * @brief Finds the initial solution using the ADD method with the third priority rule.
+     * @brief Generates the initial solution using the ADD method and all three rules.
      * 
-     * @return Solution The initial feasible solution.
+     * @return Solution The best initial solution.
      */
-    Solution findInitialSolution() const;
+    Solution generateInitialSolution();
 
 private:
-    const Instance& instance; ///< The problem instance.
+    const Instance& instance;
 
     /**
-     * @brief Calculates Pi2 for each facility.
+     * @brief Computes the P_i values for Rule 1.
      * 
-     * @param i Facility index.
-     * @return double Pi2 value for facility i.
+     * @return std::vector<std::pair<double, int>> Vector of pairs (P_i value, facility index).
      */
-    double calculatePi2(int i) const;
+    std::vector<std::pair<double, int>> computeRule1();
 
     /**
-     * @brief Calculates Pi3 for each facility.
+     * @brief Computes the P_i values for Rule 2.
      * 
-     * @param i Facility index.
-     * @return double Pi3 value for facility i.
+     * @return std::vector<std::pair<double, int>> Vector of pairs (P_i value, facility index).
      */
-    double calculatePi3(int i) const;
+    std::vector<std::pair<double, int>> computeRule2();
+
+    /**
+     * @brief Computes the P_i values for Rule 3.
+     * 
+     * @return std::vector<std::pair<double, int>> Vector of pairs (P_i value, facility index).
+     */
+    std::vector<std::pair<double, int>> computeRule3();
+
+    /**
+     * @brief Sorts the facilities based on their P_i values.
+     * 
+     * @param piValues Vector of pairs (P_i value, facility index).
+     * @return std::vector<int> Sorted indices of facilities.
+     */
+    std::vector<int> sortFacilities(const std::vector<std::pair<double, int>>& piValues);
+
+    /**
+     * @brief Implements the ADD method to generate a solution.
+     * 
+     * @param sortedFacilities Sorted indices of facilities.
+     * @return Solution Generated solution.
+     */
+    Solution addMethod(const std::vector<int>& sortedFacilities);
 };
 
 #endif // INITIALIZER_H
