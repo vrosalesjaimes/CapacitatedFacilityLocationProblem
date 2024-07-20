@@ -19,7 +19,7 @@ public:
      * @param y Vector indicating if there is a warehouse at site i (1 or 0).
      * @param x Matrix indicating if customer j is served by warehouse i (1 or 0).
      */
-    Solution(double cost, const std::vector<uint8_t>& y, const std::vector<std::vector<uint8_t>>& x);
+    Solution(double cost, const std::vector<uint8_t>& y, const std::vector<std::vector<int>>& x);
 
     /**
      * @brief Gets the cost of the solution.
@@ -54,14 +54,14 @@ public:
      *
      * @return const std::vector<std::vector<uint8_t>>& The customer assignment matrix.
      */
-    const std::vector<std::vector<uint8_t>>& getX() const;
+    const std::vector<std::vector<int>>& getX() const;
 
     /**
      * @brief Sets the customer assignment matrix.
      *
      * @param x The new customer assignment matrix.
      */
-    void setX(const std::vector<std::vector<uint8_t>>& x);
+    void setX(const std::vector<std::vector<int>>& x);
 
     /**
      * @brief Compares two solutions.
@@ -106,7 +106,7 @@ private:
 
     double cost;                         ///< The cost of the solution.
     std::vector<uint8_t> y;              ///< Warehouse assignment vector.
-    std::vector<std::vector<uint8_t>> x; ///< Customer assignment matrix.
+    std::vector<std::vector<int>> x; ///< Customer assignment matrix.
     int totalDemand;                     ///< Total demand of customers.
     bool demandCalculated;               ///< Flag to check if the total demand has been calculated.
 };

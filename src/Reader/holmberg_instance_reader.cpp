@@ -35,7 +35,7 @@ Instance HolmbergInstanceReader::readInstance(const std::string& filename) const
         }
     }
 
-    Solution bestSolution(0.0, std::vector<uint8_t>(numFacilities, 0), std::vector<std::vector<uint8_t>>(numFacilities, std::vector<uint8_t>(numCustomers, 0)));
+    Solution bestSolution(0.0, std::vector<uint8_t>(numFacilities, 0), std::vector<std::vector<int>>(numFacilities, std::vector<int>(numCustomers, 0)));
 
     return Instance(numFacilities, numCustomers, facilityCapacities, customerDemands, openingCosts, transportationCosts, bestSolution);
 }

@@ -4,7 +4,7 @@
 #include <iomanip>
 #include <numeric>
 
-Solution::Solution(double cost, const std::vector<uint8_t>& y, const std::vector<std::vector<uint8_t>>& x)
+Solution::Solution(double cost, const std::vector<uint8_t>& y, const std::vector<std::vector<int>>& x)
     : cost(cost), y(y), x(x), totalDemand(0), demandCalculated(false) {}
 
 double Solution::getCost() const {
@@ -23,11 +23,11 @@ void Solution::setY(const std::vector<uint8_t>& y) {
     this->y = y;
 }
 
-const std::vector<std::vector<uint8_t>>& Solution::getX() const {
+const std::vector<std::vector<int>>& Solution::getX() const {
     return x;
 }
 
-void Solution::setX(const std::vector<std::vector<uint8_t>>& x) {
+void Solution::setX(const std::vector<std::vector<int>>& x) {
     this->x = x;
 }
 

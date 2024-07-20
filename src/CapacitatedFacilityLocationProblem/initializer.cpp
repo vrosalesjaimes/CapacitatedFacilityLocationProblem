@@ -107,7 +107,7 @@ Solution Initializer::addMethod(const std::vector<int>& sortedFacilities) {
     const auto& transportationCosts = instance.getTransportationCosts();
 
     std::vector<uint8_t> y(numFacilities, 0);
-    std::vector<std::vector<uint8_t>> x(numFacilities, std::vector<uint8_t>(numCustomers, 0));
+    std::vector<std::vector<int>> x(numFacilities, std::vector<int>(numCustomers, 0));
 
     int totalDemand = std::accumulate(customerDemands.begin(), customerDemands.end(), 0);
 
