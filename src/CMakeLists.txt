@@ -3,6 +3,7 @@ add_executable(CapacitatedFacilityLocationProblem main.cpp
                                                 CapacitatedFacilityLocationProblem/initializer.cpp
                                                 CapacitatedFacilityLocationProblem/instance.cpp
                                                 CapacitatedFacilityLocationProblem/solution.cpp
+                                                CapacitatedFacilityLocationProblem/transport_solver.cpp
                                                 Reader/beasley_instance_reader.cpp
                                                 Reader/holmberg_instance_reader.cpp
                                                 Reader/tbed_instance_reader.cpp
