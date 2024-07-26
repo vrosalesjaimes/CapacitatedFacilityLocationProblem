@@ -33,6 +33,128 @@ public:
      */
     void generateNextInitialSolution(int index, bool open);
 
+    // Getters and Setters
+
+    /**
+     * @brief Gets the cost matrix.
+     * @return The cost matrix.
+     */
+    const std::vector<std::vector<int>>& getCosts() const;
+
+    /**
+     * @brief Gets the customer demands.
+     * @return The customer demands.
+     */
+    const std::vector<int>& getCustomerDemands() const;
+
+    /**
+     * @brief Gets the facility capacities.
+     * @return The facility capacities.
+     */
+    const std::vector<int>& getFacilityCapacities() const;
+
+    /**
+     * @brief Gets the facility status.
+     * @return The facility status.
+     */
+    const std::vector<uint8_t>& getFacilityStatus() const;
+
+    /**
+     * @brief Gets the assignment of customer demands to facilities.
+     * @return The assignment of customer demands to facilities.
+     */
+    const std::vector<std::vector<int>>& getAssignamentDemandsOfCustomers() const;
+
+    /**
+     * @brief Gets the modified cost matrix.
+     * @return The modified cost matrix.
+     */
+    const std::vector<std::vector<int>>& getModifiedCostMatrix() const;
+
+    /**
+     * @brief Gets the total demand.
+     * @return The total demand.
+     */
+    int getTotalDemand() const;
+
+    /**
+     * @brief Gets the total capacity.
+     * @return The total capacity.
+     */
+    int getTotalCapacity() const;
+
+    /**
+     * @brief Gets the customer demands with dummy demand.
+     * @return The customer demands with dummy demand.
+     */
+    const std::vector<int>& getCustomerDemandsWithDummyDemand() const;
+
+    /**
+     * @brief Gets the assignments of customer demands.
+     * @return The assignments of customer demands.
+     */
+    const std::vector<std::vector<int>>& getAssignments() const;
+
+    /**
+     * @brief Gets the total cost.
+     * @return The total cost.
+     */
+    int getTotalCost() const;
+
+    /**
+     * @brief Gets the cost matrix with slack demand.
+     * @return The cost matrix with slack demand.
+     */
+    const std::vector<std::vector<int>>& getCostMatrix() const;
+
+    /**
+     * @brief Sets the assignment of customer demands to facilities.
+     * @param assignamentDemandsOfCustomers The new assignment of customer demands to facilities.
+     */
+    void setAssignamentDemandsOfCustomers(const std::vector<std::vector<int>>& assignamentDemandsOfCustomers);
+
+    /**
+     * @brief Sets the modified cost matrix.
+     * @param modifiedCostMatrix The new modified cost matrix.
+     */
+    void setModifiedCostMatrix(const std::vector<std::vector<int>>& modifiedCostMatrix);
+
+    /**
+     * @brief Sets the total demand.
+     * @param totalDemand The new total demand.
+     */
+    void setTotalDemand(int totalDemand);
+
+    /**
+     * @brief Sets the total capacity.
+     * @param totalCapacity The new total capacity.
+     */
+    void setTotalCapacity(int totalCapacity);
+
+    /**
+     * @brief Sets the customer demands with dummy demand.
+     * @param customerDemandsWithDummyDemand The new customer demands with dummy demand.
+     */
+    void setCustomerDemandsWithDummyDemand(const std::vector<int>& customerDemandsWithDummyDemand);
+
+    /**
+     * @brief Sets the assignments of customer demands.
+     * @param assignments The new assignments of customer demands.
+     */
+    void setAssignments(const std::vector<std::vector<int>>& assignments);
+
+    /**
+     * @brief Sets the total cost.
+     * @param totalCost The new total cost.
+     */
+    void setTotalCost(int totalCost);
+
+    /**
+     * @brief Sets the cost matrix with slack demand.
+     * @param costMatrix The new cost matrix with slack demand.
+     */
+    void setCostMatrix(const std::vector<std::vector<int>>& costMatrix);
+
 private:
     const std::vector<std::vector<int>> &costs;                         ///< Cost matrix for the transportation problem.
     const std::vector<int> &customerDemands;                            ///< Vector of customer demands.

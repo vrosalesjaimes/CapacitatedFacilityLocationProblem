@@ -21,6 +21,49 @@ TransportProblem::TransportProblem(const std::vector<std::vector<int>> &costs, c
     }
 }
 
+
+
+int TransportProblem::getTotalDemand() const {
+    return totalDemand;
+}
+
+int TransportProblem::getTotalCapacity() const {
+    return totalCapacity;
+}
+
+const std::vector<int>& TransportProblem::getCustomerDemandsWithDummyDemand() const {
+    return customerDemandsWithDummyDemand;
+}
+
+const std::vector<std::vector<int>>& TransportProblem::getAssignments() const {
+    return assignments;
+}
+
+int TransportProblem::getTotalCost() const {
+    return totalCost;
+}
+
+const std::vector<std::vector<int>>& TransportProblem::getCostMatrix() const {
+    return costMatrix;
+}
+
+// Setters
+void TransportProblem::setAssignamentDemandsOfCustomers(const std::vector<std::vector<int>>& assignamentDemandsOfCustomers) {
+    this->assignamentDemandsOfCustomers = assignamentDemandsOfCustomers;
+}
+
+void TransportProblem::setModifiedCostMatrix(const std::vector<std::vector<int>>& modifiedCostMatrix) {
+    this->modifiedCostMatrix = modifiedCostMatrix;
+}
+
+void TransportProblem::setTotalDemand(int totalDemand) {
+    this->totalDemand = totalDemand;
+}
+
+void TransportProblem::setTotalCapacity(int totalCapacity) {
+    this->totalCapacity = totalCapacity;
+}
+
 void TransportProblem::addDummyDemand()
 {
     totalCapacity = accumulate(facilityCapacities.begin(), facilityCapacities.end(), 0);
