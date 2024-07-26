@@ -1,54 +1,106 @@
-#ifndef TRANSPORTSOLVER_H
-#define TRANSPORTSOLVER_H
+#ifndef TRANSPORT_SOLVER_H
+#define TRANSPORT_SOLVER_H
 
-#include <vector>
-#include <limits>
 #include "CapacitatedFacilityLocationProblem/instance.h"
 #include "CapacitatedFacilityLocationProblem/solution.h"
+#include <vector>
+#include <limits>
+#include <iostream>
 
 /**
  * @class TransportSolver
- * @brief Class to solve the transportation problem for the Capacitated Facility Location Problem.
+ * @brief Solver for the transportation problem in the capacitated facility location problem.
  */
-class TransportSolver {
+class TransportSolver
+{
 public:
     /**
-     * @brief Constructor for TransportSolver.
-     * @param instance Reference to an Instance object.
+     * @brief Constructor for the TransportSolver class.
+     * @param instance The instance of the capacitated facility location problem.
+     * @param facilityOpen A vector indicating whether each facility is open (1) or closed (0).
      */
-    TransportSolver(const Instance& instance);
+    TransportSolver(const Instance &instance, const std::vector<uint8_t> &facilityOpen);
 
     /**
-     * @brief Solves the transportation problem given a set of open facilities.
-     * @param y A vector indicating which facilities are open.
+     * @brief Generates the next initial solution by updating the cost matrix, capacity, and demand assignments.
+     * @param index The index of the facility to update.
+     * @param open Boolean indicating whether the facility is being opened (true) or closed (false).
+     */
+    void generateNextInitialSolution(int index, bool open);
+
+    /**
+     * @brief Generates the initial solution for the transportation problem.
+     */
+    void generateInitialSolution();
+
+    /**
+     * @brief Solves the transportation problem and returns the solution.
      * @return A Solution object representing the solution to the transportation problem.
      */
-    Solution solve(const std::vector<uint8_t>& y);
+    Solution solve();
+
+    void test();
 
 private:
-    const Instance& instance; ///< Reference to the instance of the problem.
+    const Instance &instance;                                    ///< Reference to the problem instance.
+    int capacity;                                                ///< Total capacity of the open facilities.
+    int totalDemand;                                             ///< Total demand of the customers.
+    std::vector<std::vector<double>> costMatrix;                 ///< Cost matrix for the transportation problem.
+    std::vector<int> customerDemands;                            ///< Vector of customer demands.
+    std::vector<uint8_t> facilityOpen;                           ///< Vector indicating whether each facility is open.
+    std::vector<std::vector<int>> assignamentDemandsOfCustomers; ///< Assignment of customer demands to facilities.
 
     /**
-     * @brief Uses the Allocation Table Method to find an initial feasible solution.
-     * @param costMatrix The cost matrix for transportation.
-     * @param allocation The allocation matrix to be filled.
+     * @brief Finds the indices of non-zero entries in the slack demand row.
+     * @return A vector of indices with non-zero entries.
      */
-    void allocationTableMethod(std::vector<std::vector<double>>& costMatrix, std::vector<std::vector<int>>& allocation);
+    std::vector<int> findNonZeroIndicesHolgura();
 
     /**
-     * @brief Uses the Vogel Approximation Method to optimize the initial solution.
-     * @param costMatrix The cost matrix for transportation.
-     * @param allocation The allocation matrix to be optimized.
+     * @brief Finds the indices of non-zero entries for a given facility.
+     * @param index The index of the facility.
+     * @return A vector of indices with non-zero entries for the given facility.
      */
-    void vogelApproximationMethod(std::vector<std::vector<double>>& costMatrix, std::vector<std::vector<int>>& allocation);
+    std::vector<int> findNonZeroIndicesFacilities(int index);
 
     /**
-     * @brief Calculates the total cost of a given allocation.
-     * @param costMatrix The cost matrix for transportation.
-     * @param allocation The allocation matrix.
-     * @return The total transportation cost.
+     * @brief Initializes the cost matrix for the transportation problem.
      */
-    double calculateTotalCost(const std::vector<std::vector<double>>& costMatrix, const std::vector<std::vector<int>>& allocation);
+    void initializeCostMatrix();
+
+    /**
+     * @brief Updates the cost matrix when a facility is opened or closed.
+     * @param index The index of the facility to update.
+     * @param open Boolean indicating whether the facility is being opened (true) or closed (false).
+     */
+    void updateCostMatrix(int index, bool open);
+
+    /**
+     * @brief Updates the total capacity when a facility is opened or closed.
+     * @param index The index of the facility to update.
+     * @param open Boolean indicating whether the facility is being opened (true) or closed (false).
+     */
+    void updateCapacity(int index, bool open);
+
+    /**
+     * @brief Reassigns customer demands when a facility is opened or closed.
+     * @param index The index of the facility to update.
+     * @param open Boolean indicating whether the facility is being opened (true) or closed (false).
+     */
+    void reAssignamentDemands(int index, bool open);
+
+    /**
+     * @brief Finds the differences in rows and columns of the cost matrix.
+     * @param grid The cost matrix.
+     * @return A pair of vectors containing row and column differences.
+     */
+    std::pair<std::vector<int>, std::vector<int>> findDiff(const std::vector<std::vector<double>> &grid);
+
+    /**
+     * @brief Solves the transportation problem using the Vogel Approximation Method (VAM) and returns the solution.
+     * @return A Solution object representing the solution to the transportation problem.
+     */
+    std::vector<std::vector<int>> TransportSolver::VogelApproximationMethod();
 };
 
-#endif // TRANSPORTSOLVER_H
+#endif // TRANSPORT_SOLVER_H

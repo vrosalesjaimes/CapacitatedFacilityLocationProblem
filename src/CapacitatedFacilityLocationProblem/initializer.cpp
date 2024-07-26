@@ -115,9 +115,8 @@ Solution Initializer::addMethod(const std::vector<int>& sortedFacilities) {
     double totalCost = std::numeric_limits<double>::max();
     
     for (int i : sortedFacilities) {
-        totalCapacity += facilityCapacities[i];
-
         if (totalCapacity < totalDemand) {
+            totalCapacity += facilityCapacities[i];
             y[i] = 1;
         }else {
             break;

@@ -1,139 +1,269 @@
 #include "CapacitatedFacilityLocationProblem/transport_solver.h"
-#include "CapacitatedFacilityLocationProblem/instance.h"
+#include <iostream>
 #include <algorithm>
 #include <numeric>
-#include <iostream>
 #include <limits>
 
-TransportSolver::TransportSolver(const Instance& instance)
-    : instance(instance) {}
+const double INF = std::numeric_limits<double>::infinity();
 
-Solution TransportSolver::solve(const std::vector<uint8_t>& y) {
+/**
+ * @brief Constructor for the TransportSolver class.
+ * @param instance The instance of the capacitated facility location problem.
+ * @param facilityOpen A vector indicating whether each facility is open (1) or closed (0).
+ */
+TransportSolver::TransportSolver(const Instance& instance, const std::vector<uint8_t>& facilityOpen)
+    : instance(instance), facilityOpen(facilityOpen), capacity(0) {
+
+    initializeCostMatrix();
+
+    customerDemands = instance.getCustomerDemands();
+    totalDemand = std::accumulate(customerDemands.begin(), customerDemands.end(), 0);
+    
+    const auto& facilityCapacities = instance.getFacilityCapacities();
+    for (size_t i = 0; i < facilityCapacities.size(); ++i) {
+        if (facilityOpen[i]) {
+            capacity += facilityCapacities[i];
+        }
+    }
+
+    customerDemands.push_back(capacity - totalDemand); // Add slack demand
+
+    assignamentDemandsOfCustomers.resize(instance.getNumFacilities() + 1, std::vector<int>(instance.getNumCustomers() + 1, 0));
+}
+
+/**
+ * @brief Initializes the cost matrix for the transportation problem.
+ */
+void TransportSolver::initializeCostMatrix() {
     int numFacilities = instance.getNumFacilities();
     int numCustomers = instance.getNumCustomers();
     const auto& transportationCosts = instance.getTransportationCosts();
-    const auto& customerDemands = instance.getCustomerDemands();
-    const auto& facilityCapacities = instance.getFacilityCapacities();
 
-    std::vector<std::vector<double>> costMatrix(numFacilities, std::vector<double>(numCustomers, std::numeric_limits<double>::max()));
-    std::vector<std::vector<int>> allocation(numFacilities, std::vector<int>(numCustomers, 0));
-
-    // Build cost matrix considering only open facilities
-    for (int i = 0; i < numFacilities; ++i) {
-        if (y[i] == 1) {
-            costMatrix[i] = transportationCosts[i];
-        }
-    }
-
-    // Step 1: Allocation Table Method
-    allocationTableMethod(costMatrix, allocation);
-
-    // Step 2: Vogel Approximation Method
-    vogelApproximationMethod(costMatrix, allocation);
-
-    // Calculate total cost
-    double totalCost = calculateTotalCost(costMatrix, allocation);
-
-    return Solution(totalCost, y, allocation);
-}
-
-void TransportSolver::allocationTableMethod(std::vector<std::vector<double>>& costMatrix, std::vector<std::vector<int>>& allocation) {
-    // Implement the Allocation Table Method to find the initial feasible solution
-    int numFacilities = instance.getNumFacilities();
-    int numCustomers = instance.getNumCustomers();
-    const auto& customerDemands = instance.getCustomerDemands();
-    const auto& facilityCapacities = instance.getFacilityCapacities();
-
-    std::vector<int> remainingDemands = customerDemands;
-    std::vector<int> remainingCapacities = facilityCapacities;
+    costMatrix.resize(numFacilities + 1, std::vector<double>(numCustomers + 1, std::numeric_limits<double>::max()));
 
     for (int i = 0; i < numFacilities; ++i) {
-        for (int j = 0; j < numCustomers; ++j) {
-            if (remainingCapacities[i] > 0 && remainingDemands[j] > 0) {
-                int allocationAmount = std::min(remainingCapacities[i], remainingDemands[j]);
-                allocation[i][j] = allocationAmount;
-                remainingCapacities[i] -= allocationAmount;
-                remainingDemands[j] -= allocationAmount;
+        if (facilityOpen[i]) {
+            for (int j = 0; j < numCustomers; ++j) {
+                costMatrix[i][j] = transportationCosts[i][j];
             }
+            costMatrix[i][numCustomers] = 0; // Cost for the slack node
+        }
+    }
+    for (int j = 0; j < numCustomers; ++j) {
+        costMatrix[numFacilities][j] = std::numeric_limits<double>::max(); // Slack node has no costs towards customers
+    }
+    costMatrix[numFacilities][numCustomers] = 0; // Slack node to itself
+}
+
+/**
+ * @brief Updates the cost matrix when a facility is opened or closed.
+ * @param index The index of the facility to update.
+ * @param open Boolean indicating whether the facility is being opened (true) or closed (false).
+ */
+void TransportSolver::updateCostMatrix(int index, bool open) {
+    int numCustomers = instance.getNumCustomers();
+    const auto& transportationCosts = instance.getTransportationCosts();
+
+    for (int j = 0; j < numCustomers; ++j) {
+        costMatrix[index][j] = open ? transportationCosts[index][j] : std::numeric_limits<double>::max();
+    }
+    costMatrix[index][numCustomers] = open ? 0 : std::numeric_limits<double>::max(); // Slack node
+}
+
+/**
+ * @brief Updates the total capacity when a facility is opened or closed.
+ * @param index The index of the facility to update.
+ * @param open Boolean indicating whether the facility is being opened (true) or closed (false).
+ */
+void TransportSolver::updateCapacity(int index, bool open) {
+    capacity += open ? instance.getFacilityCapacities()[index] : -instance.getFacilityCapacities()[index];
+    customerDemands.back() = capacity - totalDemand;
+}
+
+/**
+ * @brief Reassigns customer demands when a facility is opened or closed.
+ * @param index The index of the facility to update.
+ * @param open Boolean indicating whether the facility is being opened (true) or closed (false).
+ */
+void TransportSolver::reAssignamentDemands(int index, bool open) {
+    if (open) {
+        std::fill(assignamentDemandsOfCustomers[index].begin(), assignamentDemandsOfCustomers[index].end(), 0);
+        assignamentDemandsOfCustomers[index][instance.getNumCustomers()] = instance.getFacilityCapacities()[index];
+    } else {
+        auto nonZeroIndices = findNonZeroIndicesHolgura();
+        auto nonZeroIndicesFacilityClose = findNonZeroIndicesFacilities(index);
+
+        for (auto i : nonZeroIndicesFacilityClose) {
+            int demand = assignamentDemandsOfCustomers[index][i];
+            for (auto j : nonZeroIndices) {
+                if (demand <= assignamentDemandsOfCustomers[j].back()) {
+                    assignamentDemandsOfCustomers[j][i] = demand;
+                    assignamentDemandsOfCustomers[j].back() -= demand;
+                    break;
+                } else {
+                    demand -= assignamentDemandsOfCustomers[j].back();
+                    assignamentDemandsOfCustomers[j][i] = assignamentDemandsOfCustomers[j].back();
+                    assignamentDemandsOfCustomers[j].back() = 0;
+                }
+            }
+            assignamentDemandsOfCustomers[index][i] = 0;
         }
     }
 }
 
-void TransportSolver::vogelApproximationMethod(std::vector<std::vector<double>>& costMatrix, std::vector<std::vector<int>>& allocation) {
-    int numFacilities = instance.getNumFacilities();
-    int numCustomers = instance.getNumCustomers();
-    const auto& customerDemands = instance.getCustomerDemands();
-    const auto& facilityCapacities = instance.getFacilityCapacities();
+/**
+ * @brief Finds the indices of non-zero entries in the slack demand row.
+ * @return A vector of indices with non-zero entries.
+ */
+std::vector<int> TransportSolver::findNonZeroIndicesHolgura() {
+    std::vector<int> indices;
+    for (size_t i = 0; i < costMatrix.size(); ++i) {
+        if (costMatrix[i].back() != 0) {
+            indices.push_back(i);
+        }
+    }
+    return indices;
+}
 
-    std::vector<int> remainingDemands = customerDemands;
-    std::vector<int> remainingCapacities = facilityCapacities;
+/**
+ * @brief Finds the indices of non-zero entries for a given facility.
+ * @param index The index of the facility.
+ * @return A vector of indices with non-zero entries for the given facility.
+ */
+std::vector<int> TransportSolver::findNonZeroIndicesFacilities(int index) {
+    std::vector<int> indices;
+    for (size_t i = 0; i < instance.getCustomerDemands().size(); ++i) {
+        if (assignamentDemandsOfCustomers[index][i] != 0) {
+            indices.push_back(i);
+        }
+    }
+    return indices;
+}
 
-    while (std::accumulate(remainingDemands.begin(), remainingDemands.end(), 0) > 0) {
-        std::vector<double> rowPenalties(numFacilities, 0);
-        std::vector<double> columnPenalties(numCustomers, 0);
+/**
+ * @brief Solves the transportation problem and returns the solution.
+ * @return A Solution object representing the solution to the transportation problem.
+ */
+Solution TransportSolver::solve() {
+    // Implementar el algoritmo de red para resolver el problema de transporte
+    // utilizando la matriz de costos y las demandas
+    // Esta parte es compleja y requerirá más detalles para la implementación completa
 
-        for (int i = 0; i < numFacilities; ++i) {
-            if (remainingCapacities[i] > 0) {
-                std::vector<double> costs;
-                for (int j = 0; j < numCustomers; ++j) {
-                    if (remainingDemands[j] > 0) {
-                        costs.push_back(costMatrix[i][j]);
+    // Para ahora, devolver una solución vacía
+    return Solution(0, std::vector<uint8_t>(), std::vector<std::vector<int>>());
+}
+
+/**
+ * @brief Generates the next initial solution by updating the cost matrix, capacity, and demand assignments.
+ * @param index The index of the facility to update.
+ * @param open Boolean indicating whether the facility is being opened (true) or closed (false).
+ */
+void TransportSolver::generateNextInitialSolution(int index, bool open) {
+    updateCostMatrix(index, open);
+    updateCapacity(index, open);
+    reAssignamentDemands(index, open);
+}
+
+/**
+ * @brief Finds the differences in rows and columns of the cost matrix.
+ * @param grid The cost matrix.
+ * @return A pair of vectors containing row and column differences.
+ */
+std::pair<std::vector<int>, std::vector<int>> TransportSolver::findDiff(const std::vector<std::vector<double>>& grid) {
+    std::vector<int> rowDiff;
+    std::vector<int> colDiff;
+
+    for (const auto& row : grid) {
+        std::vector<double> arr = row;
+        std::sort(arr.begin(), arr.end());
+        rowDiff.push_back(static_cast<int>(arr[1] - arr[0]));
+    }
+
+    for (size_t col = 0; col < grid[0].size(); ++col) {
+        std::vector<double> arr;
+        for (const auto& row : grid) {
+            arr.push_back(row[col]);
+        }
+        std::sort(arr.begin(), arr.end());
+        colDiff.push_back(static_cast<int>(arr[1] - arr[0]));
+    }
+
+    return {rowDiff, colDiff};
+}
+
+/**
+ * @brief Solves the transportation problem using the Vogel Approximation Method (VAM) and returns the solution.
+ * @return A Solution object representing the solution to the transportation problem.
+ */
+std::vector<std::vector<int>> TransportSolver::VogelApproximationMethod() {
+    std::vector<int> supply = instance.getFacilityCapacities();
+    std::vector<int> demand = customerDemands;
+    int n = costMatrix.size();
+    int m = costMatrix[0].size();
+    double ans = 0;
+
+    while (*std::max_element(supply.begin(), supply.end()) != 0 || *std::max_element(demand.begin(), demand.end()) != 0) {
+        auto diffs = findDiff(costMatrix);
+        std::vector<int> row = diffs.first;
+        std::vector<int> col = diffs.second;
+
+        int maxi1 = *std::max_element(row.begin(), row.end());
+        int maxi2 = *std::max_element(col.begin(), col.end());
+
+        if (maxi1 >= maxi2) {
+            for (size_t ind = 0; ind < row.size(); ++ind) {
+                if (row[ind] == maxi1) {
+                    double mini1 = *std::min_element(costMatrix[ind].begin(), costMatrix[ind].end());
+                    for (size_t ind2 = 0; ind2 < costMatrix[ind].size(); ++ind2) {
+                        if (costMatrix[ind][ind2] == mini1) {
+                            int mini2 = std::min(supply[ind], demand[ind2]);
+                            ans += mini2 * mini1;
+                            supply[ind] -= mini2;
+                            demand[ind2] -= mini2;
+
+                            if (demand[ind2] == 0) {
+                                for (int r = 0; r < n; ++r) {
+                                    costMatrix[r][ind2] = INF;
+                                }
+                            } else {
+                                std::fill(costMatrix[ind].begin(), costMatrix[ind].end(), INF);
+                            }
+                            break;
+                        }
                     }
-                }
-                std::sort(costs.begin(), costs.end());
-                if (costs.size() >= 2) {
-                    rowPenalties[i] = costs[1] - costs[0];
-                } else if (costs.size() == 1) {
-                    rowPenalties[i] = costs[0];
+                    break;
                 }
             }
-        }
-
-        for (int j = 0; j < numCustomers; ++j) {
-            if (remainingDemands[j] > 0) {
-                std::vector<double> costs;
-                for (int i = 0; i < numFacilities; ++i) {
-                    if (remainingCapacities[i] > 0) {
-                        costs.push_back(costMatrix[i][j]);
-                    }
-                }
-                std::sort(costs.begin(), costs.end());
-                if (costs.size() >= 2) {
-                    columnPenalties[j] = costs[1] - costs[0];
-                } else if (costs.size() == 1) {
-                    columnPenalties[j] = costs[0];
-                }
-            }
-        }
-
-        auto maxRowPenaltyIt = std::max_element(rowPenalties.begin(), rowPenalties.end());
-        auto maxColumnPenaltyIt = std::max_element(columnPenalties.begin(), columnPenalties.end());
-
-        int selectedRow, selectedColumn;
-
-        if (*maxRowPenaltyIt > *maxColumnPenaltyIt) {
-            selectedRow = std::distance(rowPenalties.begin(), maxRowPenaltyIt);
-            selectedColumn = std::min_element(costMatrix[selectedRow].begin(), costMatrix[selectedRow].end()) - costMatrix[selectedRow].begin();
         } else {
-            selectedColumn = std::distance(columnPenalties.begin(), maxColumnPenaltyIt);
-            selectedRow = std::min_element(costMatrix.begin(), costMatrix.end(), [selectedColumn](const std::vector<double>& a, const std::vector<double>& b) {
-                return a[selectedColumn] < b[selectedColumn];
-            }) - costMatrix.begin();
-        }
+            for (size_t ind = 0; ind < col.size(); ++ind) {
+                if (col[ind] == maxi2) {
+                    double mini1 = INF;
+                    for (int j = 0; j < n; ++j) {
+                        mini1 = std::min(mini1, costMatrix[j][ind]);
+                    }
 
-        int allocationAmount = std::min(remainingCapacities[selectedRow], remainingDemands[selectedColumn]);
-        allocation[selectedRow][selectedColumn] += allocationAmount;
-        remainingCapacities[selectedRow] -= allocationAmount;
-        remainingDemands[selectedColumn] -= allocationAmount;
-    }
-}
+                    for (size_t ind2 = 0; ind2 < n; ++ind2) {
+                        if (costMatrix[ind2][ind] == mini1) {
+                            int mini2 = std::min(supply[ind2], demand[ind]);
+                            ans += mini2 * mini1;
+                            supply[ind2] -= mini2;
+                            demand[ind] -= mini2;
 
-double TransportSolver::calculateTotalCost(const std::vector<std::vector<double>>& costMatrix, const std::vector<std::vector<int>>& allocation) {
-    double totalCost = 0.0;
-    for (int i = 0; i < costMatrix.size(); ++i) {
-        for (int j = 0; j < costMatrix[i].size(); ++j) {
-            totalCost += costMatrix[i][j] * allocation[i][j];
+                            if (demand[ind] == 0) {
+                                for (int r = 0; r < n; ++r) {
+                                    costMatrix[r][ind] = INF;
+                                }
+                            } else {
+                                std::fill(costMatrix[ind2].begin(), costMatrix[ind2].end(), INF);
+                            }
+                            break;
+                        }
+                    }
+                    break;
+                }
+            }
         }
     }
-    return totalCost;
+
+    return assignamentDemandsOfCustomers;
 }

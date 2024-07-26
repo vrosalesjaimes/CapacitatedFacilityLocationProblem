@@ -1,12 +1,15 @@
 #include "Reader/beasley_instance_reader.h"
 #include "CapacitatedFacilityLocationProblem/initializer.h"
+#include "TransportProblem/transport_problem.h"
 #include <iostream>
 
-int main() {
+int main()
+{
     BeasleyInstanceReader reader;
-    std::string filename = "./instances/Beasley/cap41.txt";  // Reemplaza con el nombre de tu archivo Beasley
+    std::string filename = "./instances/Beasley/cap41.txt"; // Reemplaza con el nombre de tu archivo Beasley
 
-    try {
+    try
+    {
         Instance instance = reader.readInstance(filename);
 
         // Imprimir información de la instancia
@@ -14,8 +17,9 @@ int main() {
 
         // Calcular y mostrar la suma total de la demanda
         int totalDemand = 0;
-        const auto& customerDemands = instance.getCustomerDemands();
-        for (int demand : customerDemands) {
+        const auto &customerDemands = instance.getCustomerDemands();
+        for (int demand : customerDemands)
+        {
             totalDemand += demand;
         }
         std::cout << "Suma total de la demanda: " << totalDemand << std::endl;
@@ -27,38 +31,21 @@ int main() {
         Initializer initializer(instance);
         Solution initialSolution = initializer.generateInitialSolution();
         bool feasible = initialSolution.isFeasible(instance);
-        std::cout << "¿Solución inicial es factible?: " << (feasible ? "Sí" : "No") << std::endl;
 
-        // Imprimir la demanda satisfecha por la solución inicial
-        int satisfiedDemand = 0;
-        const auto& x = initialSolution.getX();
-        for (size_t i = 0; i < initialSolution.getY().size(); ++i) {
-            if (initialSolution.getY()[i] == 1) {
-                for (size_t j = 0; j < x[i].size(); ++j) {
-                    if (x[i][j] == 1) {
-                        satisfiedDemand += instance.getCustomerDemands()[j];
-                    }
-                }
-            }
-        }
-        std::cout << "Demanda satisfecha por la solución inicial: " << satisfiedDemand << std::endl;
+        std::vector<std::vector<int>> costMatrix = {
+            {8,15,10,0},
+            {10,12,14,0},
+            {14,9,15,0}};
 
-        // Imprimir el costo de la solución inicial
-        std::cout << "Costo de la solución inicial: " << initialSolution.getCost() << std::endl;
-
-        // Imprimir las facilidades abiertas en la solución inicial
-        std::cout << "Facilidades abiertas en la solución inicial:" << std::endl;
-        const auto& y = initialSolution.getY();
-        int totalCapacity = 0;
-        for (size_t i = 0; i < y.size(); ++i) {
-            if (y[i] == 1) {
-                std::cout << "Facilidad " << i << std::endl;
-                totalCapacity += instance.getFacilityCapacities()[i];
-            }
-        }
-        std::cout << "Capacidad total de las facilidades abiertas: " << totalCapacity << std::endl;
-
-    } catch (const std::exception& e) {
+        std::vector<int> supply = {35,50,40};
+        std::vector<int> demand = {45,20,30,30};
+        std::vector<uint8_t> facilityStatus = {1, 1, 1, 1};
+        TransportProblem transportProblem(costMatrix, demand, supply, facilityStatus);
+        transportProblem.VogelApproximationMethod();
+        transportProblem.printResult();
+    }
+    catch (const std::exception &e)
+    {
         std::cerr << "Error al leer la instancia: " << e.what() << std::endl;
         return 1;
     }
