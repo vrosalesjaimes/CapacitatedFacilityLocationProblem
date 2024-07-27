@@ -66,7 +66,18 @@ void TransportProblem::setTotalCapacity(int totalCapacity) {
 
 void TransportProblem::addDummyDemand()
 {
-    totalCapacity = accumulate(facilityCapacities.begin(), facilityCapacities.end(), 0);
+    totalCapacity = 0;
+
+    for (int i = 0; i < facilityCapacities.size(); i++)
+    {
+        if (facilityStatus[i] == 1)
+        {
+            totalCapacity += facilityCapacities[i];
+        }
+        
+    }
+    
+
     totalDemand = accumulate(customerDemands.begin(), customerDemands.end(), 0);
     int slackDemand = totalCapacity - totalDemand;
 
