@@ -10,61 +10,8 @@
 
 using namespace std;
 
-TransportProblem::TransportProblem(const std::vector<std::vector<int>> &costs, const std::vector<int> &customerDemands, const std::vector<int> &facilityCapacities, const std::vector<uint8_t> &facilityStatus)
-    : costs(costs), customerDemands(customerDemands), facilityCapacities(facilityCapacities), facilityStatus(facilityStatus)
-{
-    for(auto& row: costs)
-    {
-        std::vector<int> temp = row;
-        temp.push_back(0);
-        costMatrix.push_back(temp);
-    }
-}
-
-
-
-int TransportProblem::getTotalDemand() const {
-    return totalDemand;
-}
-
-int TransportProblem::getTotalCapacity() const {
-    return totalCapacity;
-}
-
-const std::vector<int>& TransportProblem::getCustomerDemandsWithDummyDemand() const {
-    return customerDemandsWithDummyDemand;
-}
-
-const std::vector<std::vector<int>>& TransportProblem::getAssignments() const {
-    return assignments;
-}
-
-int TransportProblem::getTotalCost() const {
-    return totalCost;
-}
-
-const std::vector<std::vector<int>>& TransportProblem::getCostMatrix() const {
-    return costMatrix;
-}
-
-// Setters
-void TransportProblem::setAssignamentDemandsOfCustomers(const std::vector<std::vector<int>>& assignamentDemandsOfCustomers) {
-    this->assignamentDemandsOfCustomers = assignamentDemandsOfCustomers;
-}
-
-void TransportProblem::setModifiedCostMatrix(const std::vector<std::vector<int>>& modifiedCostMatrix) {
-    this->modifiedCostMatrix = modifiedCostMatrix;
-}
-
-void TransportProblem::setTotalDemand(int totalDemand) {
-    this->totalDemand = totalDemand;
-}
-
-void TransportProblem::setTotalCapacity(int totalCapacity) {
-    this->totalCapacity = totalCapacity;
-}
-
-void TransportProblem::addDummyDemand()
+TransportProblem::TransportProblem(std::vector<std::vector<int>> &costMatrix, std::vector<int> &customerDemands, std::vector<int> &facilityCapacities, std::vector<uint8_t> &facilityStatus)
+    : costMatrix(costMatrix), customerDemands(customerDemands), facilityCapacities(facilityCapacities), facilityStatus(facilityStatus)
 {
     totalCapacity = 0;
 
@@ -74,65 +21,38 @@ void TransportProblem::addDummyDemand()
         {
             totalCapacity += facilityCapacities[i];
         }
-        
     }
-    
 
     totalDemand = accumulate(customerDemands.begin(), customerDemands.end(), 0);
-    int slackDemand = totalCapacity - totalDemand;
-
-    customerDemandsWithDummyDemand = customerDemands;
-    customerDemandsWithDummyDemand.push_back(slackDemand);
+    initializeModifiedCostMatrix();
+    initializeAssignamentDemandsOfCustomers();
 }
 
 void TransportProblem::initializeModifiedCostMatrix()
 {
-    modifiedCostMatrix = std::vector<std::vector<int>>(facilityStatus.size(),std::vector<int>(customerDemandsWithDummyDemand.size(),std::numeric_limits<int>::max()));
+    modifiedCostMatrix = std::vector<std::vector<int>>(facilityStatus.size(), std::vector<int>(customerDemands.size(), std::numeric_limits<int>::max()));
 
     for (int i = 0; i < costMatrix.size(); i++)
-    {   
+    {
         if (facilityStatus[i] == 1)
         {
-            for (int j = 0; j < costMatrix[i].size(); j++)
-            {
-                
-                    modifiedCostMatrix[i][j] = costMatrix[i][j];
-            }
-            modifiedCostMatrix[i][customerDemandsWithDummyDemand.size() - 1] = 0;
+            modifiedCostMatrix[i] = costMatrix[i];
         }
     }
 }
 
-void TransportProblem::balanceProblem()
-{
-    addDummyDemand();
-    initializeModifiedCostMatrix();
-}
-
 void TransportProblem::updateCostMatrix(int index, bool open)
 {
-    modifiedCostMatrix[index] = open ? costMatrix[index] : std::vector<int>(customerDemandsWithDummyDemand.size(), std::numeric_limits<int>::max());
+    modifiedCostMatrix[index] = open ? costMatrix[index] : std::vector<int>(customerDemands.size(), std::numeric_limits<int>::max());
 }
 
 void TransportProblem::updateCapacity(int index, bool open)
 {
     totalCapacity = open ? totalCapacity + facilityCapacities[index] : totalCapacity - facilityCapacities[index];
-    customerDemandsWithDummyDemand[customerDemandsWithDummyDemand.size() - 1] = totalCapacity - totalDemand;
 }
 
-std::vector<int> TransportProblem::findNonZeroIndicesHolgura(){
-    std::vector<int> nonZeroIndices;
-    for (int i = 0; i < facilityStatus.size(); i++)
-    {
-        if (facilityStatus[i] == 1 && costMatrix[i][customerDemandsWithDummyDemand.size() - 1] != 0)
-        {
-            nonZeroIndices.push_back(i);
-        }
-    }
-    return nonZeroIndices;
-}
-
-std::vector<int> TransportProblem::findNonZeroIndicesFacility(int index){
+std::vector<int> TransportProblem::findNonZeroIndicesFacility(int index)
+{
     std::vector<int> nonZeroIndices;
     for (int i = 0; i < customerDemands.size(); i++)
     {
@@ -144,41 +64,103 @@ std::vector<int> TransportProblem::findNonZeroIndicesFacility(int index){
     return nonZeroIndices;
 }
 
-void TransportProblem::reAssignDemands(int index, bool open){
+void TransportProblem::reAssignDemands(int index, bool open, vector<int> dummyAssignament)
+{
     if (open)
     {
-        for(int i : assignamentDemandsOfCustomers[index]){
-            assignamentDemandsOfCustomers[index][i]=0;
+        for (int i : assignamentDemandsOfCustomers[index])
+        {
+            assignamentDemandsOfCustomers[index][i] = 0;
         }
-    } else {
+    }
+    else
+    {
         auto nonZeroIndices = findNonZeroIndicesFacility(index);
-        auto nonZeroIndicesHolgura = findNonZeroIndicesHolgura();
 
-        for(int i: nonZeroIndices){
+        for (int i : nonZeroIndices)
+        {
             int demand = assignamentDemandsOfCustomers[index][i];
-            for(int j: nonZeroIndicesHolgura){
-                if(demand <= assignamentDemandsOfCustomers[j][customerDemandsWithDummyDemand.size() - 1])
+            for (int j : dummyAssignament)
+            {
+                int restCapacity = calculateRestCapacity(j);
+                if (demand <= restCapacity)
                 {
                     assignamentDemandsOfCustomers[j][i] = demand;
-                    assignamentDemandsOfCustomers[j][customerDemandsWithDummyDemand.size() - 1] -= demand;
                     break;
-                } else {
-                    assignamentDemandsOfCustomers[j][i] = assignamentDemandsOfCustomers[j][customerDemandsWithDummyDemand.size() - 1];
-                    assignamentDemandsOfCustomers[j][customerDemandsWithDummyDemand.size() - 1] = 0;
-                    demand -= assignamentDemandsOfCustomers[j][i];
+                }
+                else
+                {
+                    assignamentDemandsOfCustomers[j][i] = restCapacity;
+                    demand -= restCapacity;
                 }
             }
         }
     }
-    
 }
 
-void TransportProblem::generateNextInitialSolution(int index, bool open)
+int TransportProblem::calculateRestCapacity(int index)
+{
+    int restCapacity = 0;
+    for (int i = 0; i < customerDemands.size(); i++)
+    {
+        restCapacity += assignamentDemandsOfCustomers[index][i];
+    }
+
+    return facilityCapacities[index] - restCapacity;
+}
+
+void TransportProblem::generateNextInitialSolution(int index, bool open, vector<int> dummyAssignamentIndex)
 {
     updateCostMatrix(index, open);
     updateCapacity(index, open);
-    reAssignDemands(index, open);
+    reAssignDemands(index, open, dummyAssignamentIndex);
 }
 
+void TransportProblem::printProblem()
+{
+    std::cout << "Cost matrix: " << std::endl;
+    for (const auto &row : modifiedCostMatrix)
+    {
+        for (int cost : row)
+        {
+            std::cout << cost << " ";
+        }
+        std::cout << std::endl;
+    }
 
+    std::cout << "Customer demands: ";
+    for (int demand : customerDemands)
+    {
+        std::cout << demand << " ";
+    }
+    std::cout << std::endl;
 
+    std::cout << "Facility capacities: ";
+    for (int capacity : facilityCapacities)
+    {
+        std::cout << capacity << " ";
+    }
+    std::cout << std::endl;
+
+    std::cout << "Facility status: ";
+    for (uint8_t status : facilityStatus)
+    {
+        std::cout << static_cast<int>(status) << " ";
+    }
+    std::cout << std::endl;
+
+    std::cout << "Assignaments: " << std::endl;
+    for (int i = 0; i < assignamentDemandsOfCustomers.size(); i++)
+    {
+        for (int j = 0; j < assignamentDemandsOfCustomers[i].size(); j++)
+        {
+            std::cout << assignamentDemandsOfCustomers[i][j] << " ";
+        }
+        std::cout << std::endl;
+    }
+}
+
+void TransportProblem::initializeAssignamentDemandsOfCustomers()
+{
+    assignamentDemandsOfCustomers = std::vector<std::vector<int>>(modifiedCostMatrix.size(), std::vector<int>(modifiedCostMatrix[0].size(), 0));
+}
