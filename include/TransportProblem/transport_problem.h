@@ -1,6 +1,8 @@
 #ifndef TRANSPORT_PROBLEM_H
 #define TRANSPORT_PROBLEM_H
 
+#include "TransportProblem/transport_solver.h"
+
 #include <vector>
 #include <limits>
 #include <cstdint>
@@ -48,6 +50,7 @@ private:
     int totalCapacity;                                                  ///< Total capacity of the open facilities.
     std::vector<std::vector<int>> assignments;                          ///< Assignment of customer demands.
     int totalCost;                                                      ///< Total cost of the solution.
+    TransportSolver solver;                                             ///< Solver for the transportation problem.
 
     /**
      * @brief Initializes the modified cost matrix.

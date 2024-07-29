@@ -1,4 +1,5 @@
 #include "TransportProblem/transport_problem.h"
+#include "TransportProblem/transport_solver.h"
 
 #include <iostream>
 #include <queue>
@@ -11,7 +12,8 @@
 using namespace std;
 
 TransportProblem::TransportProblem(std::vector<std::vector<int>> &costMatrix, std::vector<int> &customerDemands, std::vector<int> &facilityCapacities, std::vector<uint8_t> &facilityStatus)
-    : costMatrix(costMatrix), customerDemands(customerDemands), facilityCapacities(facilityCapacities), facilityStatus(facilityStatus)
+    : costMatrix(costMatrix), customerDemands(customerDemands), facilityCapacities(facilityCapacities), facilityStatus(facilityStatus),
+      solver(modifiedCostMatrix, facilityCapacities, customerDemands, assignamentDemandsOfCustomers, totalCapacity, totalDemand)
 {
     totalCapacity = 0;
 
@@ -26,6 +28,7 @@ TransportProblem::TransportProblem(std::vector<std::vector<int>> &costMatrix, st
     totalDemand = accumulate(customerDemands.begin(), customerDemands.end(), 0);
     initializeModifiedCostMatrix();
     initializeAssignamentDemandsOfCustomers();
+    solver.solveVAM();
 }
 
 void TransportProblem::initializeModifiedCostMatrix()
