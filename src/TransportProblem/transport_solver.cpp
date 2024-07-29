@@ -50,14 +50,14 @@ void TransportSolver::solveVAM()
         calculateRowPenality(cost, flagRow, flagCol, supplyCopy.size(), rowPenality);
         calculateColPenality(cost, flagRow, flagCol, demandCopy.size(), colPenality);
         
-        int maxRow = calculateMax(rowPenality, supplyCopy.size());
-        int maxCol = calculateMax(colPenality, demandCopy.size());
+        int maxRow = *max_element(rowPenality.begin(), rowPenality.end());
+        int maxCol = *max_element(colPenality.begin(), colPenality.end());
         int maxi = max(maxRow, maxCol);
 
         int i_iter = -1, j_iter = -1, maximum=0;
 
         calculateLocation(cost, supplyCopy, demandCopy, rowPenality, colPenality, supplyCopy.size(), demandCopy.size(), maximum, i_iter, j_iter, maxi, flagRow, flagCol);
-
+        
         /* MODIFYING CERTAIN QUANTITIES FOR FURTHER EVALUATION */ 
         if(maximum == demand[j_iter])
         {
@@ -86,6 +86,8 @@ void TransportSolver::solveVAM()
         
     }
 
+    std::cout << "OUTPUT: \n";
+    cout<<"OUTPUT: \n";
     cout<<"INITIAL BASIC FEASIBLE SOLUTION: \n";
     int total_cost = 0,count=0,mini=INT_MAX,p=0,q=0;
     for(int i=0;i<supply.size();i++)
@@ -176,16 +178,6 @@ void TransportSolver::calculateColPenality(vector<vector<int>> &c,vector<bool> &
         }
         else cp[i]=-1;
     }
-}
-
-int TransportSolver::calculateMax(vector<int> v, int n)
-{
-    int maxi=-1;
-    for(int i=0;i<n;i++)
-    {
-        maxi=max(maxi,v[i]);
-    }
-    return maxi;
 }
 
 void TransportSolver::calculateLocation(vector<vector<int>> &cost, vector<int> &supply, vector<int>&demand, vector<int> &row_penalty,vector<int> &column_penalty,
