@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.20)
 
 # Nombre del proyecto
 project(CapacitatedFacilityLocationProblem VERSION 1.0)
@@ -12,6 +12,7 @@ include_directories(include)
 
 # Añadir subdirectorios
 add_subdirectory(src)
+add_subdirectory(tests)
 
 # Copiar directorio de instancias a la carpeta de compilación
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/instances DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
