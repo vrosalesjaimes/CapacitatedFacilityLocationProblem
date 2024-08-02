@@ -5,6 +5,8 @@
 #include <iostream>
 #include <sstream>
 
+using namespace std;
+
 
 Initializer::Initializer(const Instance& instance)
     : instance(instance) {}
@@ -35,8 +37,8 @@ Solution Initializer::generateInitialSolution() {
     }
 }
 
-std::vector<std::pair<double, int>> Initializer::computeRule1() {
-    std::vector<std::pair<double, int>> piValues;
+vector<pair<double, int>> Initializer::computeRule1() {
+    vector<pair<double, int>> piValues;
     const auto& capacities = instance.getFacilityCapacities();
     const auto& openingCosts = instance.getOpeningCosts();
 
@@ -48,14 +50,14 @@ std::vector<std::pair<double, int>> Initializer::computeRule1() {
     return piValues;
 }
 
-std::vector<std::pair<double, int>> Initializer::computeRule2() {
-    std::vector<std::pair<double, int>> piValues;
+vector<pair<double, int>> Initializer::computeRule2() {
+    vector<pair<double, int>> piValues;
     const auto& demands = instance.getCustomerDemands();
     const auto& capacities = instance.getFacilityCapacities();
     const auto& openingCosts = instance.getOpeningCosts();
     const auto& transportationCosts = instance.getTransportationCosts();
 
-    double totalDemand = std::accumulate(demands.begin(), demands.end(), 0.0);
+    double totalDemand = accumulate(demands.begin(), demands.end(), 0.0);
 
     for (int i = 0; i < capacities.size(); ++i) {
         double transportationCostSum = 0.0;
@@ -69,8 +71,8 @@ std::vector<std::pair<double, int>> Initializer::computeRule2() {
     return piValues;
 }
 
-std::vector<std::pair<double, int>> Initializer::computeRule3() {
-    std::vector<std::pair<double, int>> piValues;
+vector<pair<double, int>> Initializer::computeRule3() {
+    vector<pair<double, int>> piValues;
     const auto& capacities = instance.getFacilityCapacities();
     const auto& openingCosts = instance.getOpeningCosts();
     const auto& transportationCosts = instance.getTransportationCosts();
@@ -78,9 +80,9 @@ std::vector<std::pair<double, int>> Initializer::computeRule3() {
     int thirdN = n / 3;
 
     for (int i = 0; i < capacities.size(); ++i) {
-        std::vector<double> costs = transportationCosts[i];
-        std::nth_element(costs.begin(), costs.begin() + thirdN, costs.end());
-        double sumLeastCosts = std::accumulate(costs.begin(), costs.begin() + thirdN, 0.0);
+        vector<double> costs = transportationCosts[i];
+        nth_element(costs.begin(), costs.begin() + thirdN, costs.end());
+        double sumLeastCosts = accumulate(costs.begin(), costs.begin() + thirdN, 0.0);
         double pi = (sumLeastCosts / thirdN) + (openingCosts[i] / capacities[i]);
         piValues.emplace_back(pi, i);
     }
@@ -88,17 +90,17 @@ std::vector<std::pair<double, int>> Initializer::computeRule3() {
     return piValues;
 }
 
-std::vector<int> Initializer::sortFacilities(const std::vector<std::pair<double, int>>& piValues) {
+vector<int> Initializer::sortFacilities(const vector<pair<double, int>>& piValues) {
     auto sortedPiValues = piValues;
-    std::sort(sortedPiValues.begin(), sortedPiValues.end());
-    std::vector<int> sortedIndices;
+    sort(sortedPiValues.begin(), sortedPiValues.end());
+    vector<int> sortedIndices;
     for (const auto& [pi, index] : sortedPiValues) {
         sortedIndices.push_back(index);
     }
     return sortedIndices;
 }
 
-Solution Initializer::addMethod(const std::vector<int>& sortedFacilities) {
+Solution Initializer::addMethod(const vector<int>& sortedFacilities) {
     int numFacilities = instance.getNumFacilities();
     int numCustomers = instance.getNumCustomers();
     const auto& customerDemands = instance.getCustomerDemands();
@@ -106,13 +108,13 @@ Solution Initializer::addMethod(const std::vector<int>& sortedFacilities) {
     const auto& openingCosts = instance.getOpeningCosts();
     const auto& transportationCosts = instance.getTransportationCosts();
 
-    std::vector<uint8_t> y(numFacilities, 0);
-    std::vector<std::vector<int>> x(numFacilities, std::vector<int>(numCustomers, 0));
+    vector<bool> y(numFacilities, 0);
+    vector<vector<int>> x(numFacilities, vector<int>(numCustomers, 0));
 
-    int totalDemand = std::accumulate(customerDemands.begin(), customerDemands.end(), 0);
+    int totalDemand = accumulate(customerDemands.begin(), customerDemands.end(), 0);
 
     int totalCapacity = 0;
-    double totalCost = std::numeric_limits<double>::max();
+    double totalCost = numeric_limits<double>::max();
     
     for (int i : sortedFacilities) {
         if (totalCapacity < totalDemand) {

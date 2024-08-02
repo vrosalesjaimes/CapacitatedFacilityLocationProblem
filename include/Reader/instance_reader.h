@@ -4,6 +4,8 @@
 #include <string>
 #include "CapacitatedFacilityLocationProblem/instance.h"
 
+using namespace std;
+
 /**
  * @brief Abstract base class for reading instances of the Capacitated Facility Location Problem.
  */
@@ -20,7 +22,7 @@ public:
      * @param filename The name of the file containing the instance data.
      * @return Instance The read instance.
      */
-    virtual Instance readInstance(const std::string& filename) const = 0;
+    virtual Instance readInstance(const string& filename) const = 0;
 };
 
 #endif // INSTANCEREADER_H

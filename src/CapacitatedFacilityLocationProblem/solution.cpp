@@ -4,7 +4,9 @@
 #include <iomanip>
 #include <numeric>
 
-Solution::Solution(double cost, const std::vector<uint8_t>& y, const std::vector<std::vector<int>>& x)
+using namespace std;
+
+Solution::Solution(double cost, vector<bool>& y, vector<vector<int>>& x)
     : cost(cost), y(y), x(x), totalDemand(0), demandCalculated(false) {}
 
 double Solution::getCost() const {
@@ -15,19 +17,19 @@ void Solution::setCost(double cost) {
     this->cost = cost;
 }
 
-const std::vector<uint8_t>& Solution::getY() const {
+const vector<bool>& Solution::getY() const {
     return y;
 }
 
-void Solution::setY(const std::vector<uint8_t>& y) {
+void Solution::setY(const vector<bool>& y) {
     this->y = y;
 }
 
-const std::vector<std::vector<int>>& Solution::getX() const {
+const vector<vector<int>>& Solution::getX() const {
     return x;
 }
 
-void Solution::setX(const std::vector<std::vector<int>>& x) {
+void Solution::setX(const vector<vector<int>>& x) {
     this->x = x;
 }
 
@@ -54,9 +56,9 @@ void Solution::calculateCost(const Instance& instance) {
     setCost(totalCost);
 }
 
-std::string Solution::toString() const {
-    std::stringstream ss;
-    ss << std::fixed << std::setprecision(2);
+string Solution::toString() const {
+    stringstream ss;
+    ss << fixed << setprecision(2);
     ss << "Cost: " << cost << "\nY: ";
     for (const auto& val : y) {
         ss << static_cast<int>(val) << " ";
@@ -74,7 +76,7 @@ std::string Solution::toString() const {
 int Solution::calculateTotalDemand(const Instance& instance) {
     if (!demandCalculated) {
         const auto& customerDemands = instance.getCustomerDemands();
-        totalDemand = std::accumulate(customerDemands.begin(), customerDemands.end(), 0);
+        totalDemand = accumulate(customerDemands.begin(), customerDemands.end(), 0);
         demandCalculated = true;
     }
     return totalDemand;

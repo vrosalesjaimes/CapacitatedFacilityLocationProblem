@@ -6,6 +6,8 @@
 #include <vector>
 #include <utility>
 
+using namespace std;
+
 /**
  * @brief Class for initializing solutions for the Capacitated Facility Location Problem.
  */
@@ -31,31 +33,31 @@ private:
     /**
      * @brief Computes the P_i values for Rule 1.
      * 
-     * @return std::vector<std::pair<double, int>> Vector of pairs (P_i value, facility index).
+     * @return vector<pair<double, int>> Vector of pairs (P_i value, facility index).
      */
-    std::vector<std::pair<double, int>> computeRule1();
+    vector<pair<double, int>> computeRule1();
 
     /**
      * @brief Computes the P_i values for Rule 2.
      * 
-     * @return std::vector<std::pair<double, int>> Vector of pairs (P_i value, facility index).
+     * @return vector<pair<double, int>> Vector of pairs (P_i value, facility index).
      */
-    std::vector<std::pair<double, int>> computeRule2();
+    vector<pair<double, int>> computeRule2();
 
     /**
      * @brief Computes the P_i values for Rule 3.
      * 
-     * @return std::vector<std::pair<double, int>> Vector of pairs (P_i value, facility index).
+     * @return vector<pair<double, int>> Vector of pairs (P_i value, facility index).
      */
-    std::vector<std::pair<double, int>> computeRule3();
+    vector<pair<double, int>> computeRule3();
 
     /**
      * @brief Sorts the facilities based on their P_i values.
      * 
      * @param piValues Vector of pairs (P_i value, facility index).
-     * @return std::vector<int> Sorted indices of facilities.
+     * @return vector<int> Sorted indices of facilities.
      */
-    std::vector<int> sortFacilities(const std::vector<std::pair<double, int>>& piValues);
+    vector<int> sortFacilities(const vector<pair<double, int>>& piValues);
 
     /**
      * @brief Implements the ADD method to generate a solution.
@@ -63,7 +65,7 @@ private:
      * @param sortedFacilities Sorted indices of facilities.
      * @return Solution Generated solution.
      */
-    Solution addMethod(const std::vector<int>& sortedFacilities);
+    Solution addMethod(const vector<int>& sortedFacilities);
 };
 
 #endif // INITIALIZER_H

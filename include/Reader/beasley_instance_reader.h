@@ -4,6 +4,8 @@
 #include "Reader/instance_reader.h"
 #include <vector>
 
+using namespace std;
+
 /**
  * @brief Class for reading Beasley instances of the Capacitated Facility Location Problem.
  */
@@ -15,7 +17,7 @@ public:
      * @param filename The name of the file containing the instance data.
      * @return Instance The read instance.
      */
-    Instance readInstance(const std::string& filename) const override;
+    Instance readInstance(const string& filename) const override;
 };
 
 #endif // BEASLEYINSTANCEREADER_H
