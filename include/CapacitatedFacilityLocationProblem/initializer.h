@@ -18,7 +18,7 @@ public:
      * 
      * @param instance Reference to the instance of the problem.
      */
-    Initializer(const Instance& instance);
+    Initializer(Instance& instance);
 
     /**
      * @brief Generates the initial solution using the ADD method and all three rules.
@@ -28,7 +28,7 @@ public:
     Solution generateInitialSolution();
 
 private:
-    const Instance& instance;
+    Instance& instance;
 
     /**
      * @brief Computes the P_i values for Rule 1.
@@ -57,7 +57,7 @@ private:
      * @param piValues Vector of pairs (P_i value, facility index).
      * @return vector<int> Sorted indices of facilities.
      */
-    vector<int> sortFacilities(const vector<pair<double, int>>& piValues);
+    vector<int> sortFacilities(vector<pair<double, int>>& piValues);
 
     /**
      * @brief Implements the ADD method to generate a solution.
@@ -65,7 +65,7 @@ private:
      * @param sortedFacilities Sorted indices of facilities.
      * @return Solution Generated solution.
      */
-    Solution addMethod(const vector<int>& sortedFacilities);
+    Solution addMethod(vector<int>& sortedFacilities);
 };
 
 #endif // INITIALIZER_H

@@ -4,10 +4,10 @@
 using namespace std;
 
 Instance::Instance(int numFacilities, int numCustomers, 
-                   const vector<int>& facilityCapacities, 
-                   const vector<int>& customerDemands,
-                   const vector<double>& openingCosts,
-                   const vector<vector<double>>& transportationCosts,
+                   vector<int>& facilityCapacities, 
+                   vector<int>& customerDemands,
+                   vector<double>& openingCosts,
+                   vector<vector<double>>& transportationCosts,
                    Solution& bestSolution)
     : numFacilities(numFacilities), numCustomers(numCustomers), 
       facilityCapacities(facilityCapacities), customerDemands(customerDemands), 
@@ -25,30 +25,30 @@ Instance::Instance(int numFacilities, int numCustomers,
     }
 }
 
-int Instance::getNumFacilities() const {
+int Instance::getNumFacilities() {
     return numFacilities;
 }
 
-int Instance::getNumCustomers() const {
+int Instance::getNumCustomers() {
     return numCustomers;
 }
 
-const vector<int>& Instance::getFacilityCapacities() const {
+vector<int>& Instance::getFacilityCapacities() {
     return facilityCapacities;
 }
 
-const vector<int>& Instance::getCustomerDemands() const {
+vector<int>& Instance::getCustomerDemands() {
     return customerDemands;
 }
 
-const vector<double>& Instance::getOpeningCosts() const {
+vector<double>& Instance::getOpeningCosts() {
     return openingCosts;
 }
 
-const vector<vector<double>>& Instance::getTransportationCosts() const {
+vector<vector<double>>& Instance::getTransportationCosts() {
     return transportationCosts;
 }
 
-const Solution& Instance::getBestSolution() const {
+Solution& Instance::getBestSolution() {
     return bestSolution;
 }

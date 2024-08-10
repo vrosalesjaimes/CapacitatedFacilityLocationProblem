@@ -23,10 +23,10 @@ public:
      * @param bestSolution Initial best solution.
      */
     Instance(int numFacilities, int numCustomers, 
-             const vector<int>& facilityCapacities, 
-             const vector<int>& customerDemands,
-             const vector<double>& openingCosts,
-             const vector<vector<double>>& transportationCosts,
+             vector<int>& facilityCapacities, 
+             vector<int>& customerDemands,
+             vector<double>& openingCosts,
+             vector<vector<double>>& transportationCosts,
              Solution& bestSolution);
 
     /**
@@ -34,57 +34,57 @@ public:
      * 
      * @return int Number of facilities.
      */
-    int getNumFacilities() const;
+    int getNumFacilities() ;
 
     /**
      * @brief Gets the number of customers.
      * 
      * @return int Number of customers.
      */
-    int getNumCustomers() const;
+    int getNumCustomers() ;
 
     /**
      * @brief Gets the facility capacities.
      * 
-     * @return const vector<int>& The facility capacities.
+     * @return vector<int>& The facility capacities.
      */
-    const vector<int>& getFacilityCapacities() const;
+    vector<int>& getFacilityCapacities() ;
 
     /**
      * @brief Gets the customer demands.
      * 
-     * @return const vector<int>& The customer demands.
+     * @return vector<int>& The customer demands.
      */
-    const vector<int>& getCustomerDemands() const;
+    vector<int>& getCustomerDemands() ;
 
     /**
      * @brief Gets the opening costs.
      * 
-     * @return const vector<double>& The opening costs.
+     * @return vector<double>& The opening costs.
      */
-    const vector<double>& getOpeningCosts() const;
+    vector<double>& getOpeningCosts() ;
 
     /**
      * @brief Gets the transportation costs.
      * 
-     * @return const vector<vector<double>>& The transportation costs.
+     * @return vector<vector<double>>& The transportation costs.
      */
-    const vector<vector<double>>& getTransportationCosts() const;
+    vector<vector<double>>& getTransportationCosts() ;
 
     /**
      * @brief Gets the best solution for this instance.
      * 
-     * @return const Solution& The best solution.
+     * @return Solution& The best solution.
      */
-    const Solution& getBestSolution() const;
+    Solution& getBestSolution() ;
 
 private:
-    const int numFacilities; ///< Number of facilities.
-    const int numCustomers; ///< Number of customers.
-    const vector<int> facilityCapacities; ///< Capacities of each facility.
-    const vector<int> customerDemands; ///< Demands of each customer.
-    const vector<double> openingCosts; ///< Opening costs of each facility.
-    const vector<vector<double>> transportationCosts; ///< Transportation costs from facilities to customers.
+    int numFacilities; ///< Number of facilities.
+    int numCustomers; ///< Number of customers.
+    vector<int> facilityCapacities; ///< Capacities of each facility.
+    vector<int> customerDemands; ///< Demands of each customer.
+    vector<double> openingCosts; ///< Opening costs of each facility.
+    vector<vector<double>> transportationCosts; ///< Transportation costs from facilities to customers.
     Solution bestSolution; ///< The best solution found for this instance.
 };
 

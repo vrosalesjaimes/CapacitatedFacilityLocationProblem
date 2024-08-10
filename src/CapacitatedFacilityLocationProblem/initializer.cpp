@@ -8,7 +8,7 @@
 using namespace std;
 
 
-Initializer::Initializer(const Instance& instance)
+Initializer::Initializer(Instance& instance)
     : instance(instance) {}
 
 Solution Initializer::generateInitialSolution() {
@@ -39,8 +39,8 @@ Solution Initializer::generateInitialSolution() {
 
 vector<pair<double, int>> Initializer::computeRule1() {
     vector<pair<double, int>> piValues;
-    const auto& capacities = instance.getFacilityCapacities();
-    const auto& openingCosts = instance.getOpeningCosts();
+    auto& capacities = instance.getFacilityCapacities();
+    auto& openingCosts = instance.getOpeningCosts();
 
     for (int i = 0; i < capacities.size(); ++i) {
         double pi = static_cast<double>(capacities[i]) / openingCosts[i];
@@ -52,10 +52,10 @@ vector<pair<double, int>> Initializer::computeRule1() {
 
 vector<pair<double, int>> Initializer::computeRule2() {
     vector<pair<double, int>> piValues;
-    const auto& demands = instance.getCustomerDemands();
-    const auto& capacities = instance.getFacilityCapacities();
-    const auto& openingCosts = instance.getOpeningCosts();
-    const auto& transportationCosts = instance.getTransportationCosts();
+    auto& demands = instance.getCustomerDemands();
+    auto& capacities = instance.getFacilityCapacities();
+    auto& openingCosts = instance.getOpeningCosts();
+    auto& transportationCosts = instance.getTransportationCosts();
 
     double totalDemand = accumulate(demands.begin(), demands.end(), 0.0);
 
@@ -73,9 +73,9 @@ vector<pair<double, int>> Initializer::computeRule2() {
 
 vector<pair<double, int>> Initializer::computeRule3() {
     vector<pair<double, int>> piValues;
-    const auto& capacities = instance.getFacilityCapacities();
-    const auto& openingCosts = instance.getOpeningCosts();
-    const auto& transportationCosts = instance.getTransportationCosts();
+    auto& capacities = instance.getFacilityCapacities();
+    auto& openingCosts = instance.getOpeningCosts();
+    auto& transportationCosts = instance.getTransportationCosts();
     int n = instance.getNumCustomers();
     int thirdN = n / 3;
 
@@ -90,23 +90,23 @@ vector<pair<double, int>> Initializer::computeRule3() {
     return piValues;
 }
 
-vector<int> Initializer::sortFacilities(const vector<pair<double, int>>& piValues) {
+vector<int> Initializer::sortFacilities(vector<pair<double, int>>& piValues) {
     auto sortedPiValues = piValues;
     sort(sortedPiValues.begin(), sortedPiValues.end());
     vector<int> sortedIndices;
-    for (const auto& [pi, index] : sortedPiValues) {
+    for (auto& [pi, index] : sortedPiValues) {
         sortedIndices.push_back(index);
     }
     return sortedIndices;
 }
 
-Solution Initializer::addMethod(const vector<int>& sortedFacilities) {
+Solution Initializer::addMethod(vector<int>& sortedFacilities) {
     int numFacilities = instance.getNumFacilities();
     int numCustomers = instance.getNumCustomers();
-    const auto& customerDemands = instance.getCustomerDemands();
-    const auto& facilityCapacities = instance.getFacilityCapacities();
-    const auto& openingCosts = instance.getOpeningCosts();
-    const auto& transportationCosts = instance.getTransportationCosts();
+    auto& customerDemands = instance.getCustomerDemands();
+    auto& facilityCapacities = instance.getFacilityCapacities();
+    auto& openingCosts = instance.getOpeningCosts();
+    auto& transportationCosts = instance.getTransportationCosts();
 
     vector<bool> y(numFacilities, 0);
     vector<vector<int>> x(numFacilities, vector<int>(numCustomers, 0));
