@@ -70,7 +70,7 @@ TEST(InstanceTest, GetNumCustomersTest) {
 
 // Test del getter getFacilityCapacities
 TEST(InstanceTest, GetFacilityCapacitiesTest) {
-    const auto& capacities = randomInstance.getFacilityCapacities();
+    auto& capacities = randomInstance.getFacilityCapacities();
     EXPECT_EQ(capacities.size(), randomInstance.getNumFacilities());
     for (int cap : capacities) {
         EXPECT_GE(cap, 50);
@@ -80,7 +80,7 @@ TEST(InstanceTest, GetFacilityCapacitiesTest) {
 
 // Test del getter getCustomerDemands
 TEST(InstanceTest, GetCustomerDemandsTest) {
-    const auto& demands = randomInstance.getCustomerDemands();
+    auto& demands = randomInstance.getCustomerDemands();
     EXPECT_EQ(demands.size(), randomInstance.getNumCustomers());
     for (int demand : demands) {
         EXPECT_GE(demand, 10);
@@ -90,7 +90,7 @@ TEST(InstanceTest, GetCustomerDemandsTest) {
 
 // Test del getter getOpeningCosts
 TEST(InstanceTest, GetOpeningCostsTest) {
-    const auto& costs = randomInstance.getOpeningCosts();
+    auto& costs = randomInstance.getOpeningCosts();
     EXPECT_EQ(costs.size(), randomInstance.getNumFacilities());
     for (double cost : costs) {
         EXPECT_GE(cost, 1000.0);
@@ -100,9 +100,9 @@ TEST(InstanceTest, GetOpeningCostsTest) {
 
 // Test del getter getTransportationCosts
 TEST(InstanceTest, GetTransportationCostsTest) {
-    const auto& costs = randomInstance.getTransportationCosts();
+    auto& costs = randomInstance.getTransportationCosts();
     EXPECT_EQ(costs.size(), randomInstance.getNumFacilities());
-    for (const auto& facilityCosts : costs) {
+    for (auto& facilityCosts : costs) {
         EXPECT_EQ(facilityCosts.size(), randomInstance.getNumCustomers());
         for (double cost : facilityCosts) {
             EXPECT_GE(cost, 10.0);
@@ -113,7 +113,7 @@ TEST(InstanceTest, GetTransportationCostsTest) {
 
 // Test del getter getBestSolution
 TEST(InstanceTest, GetBestSolutionTest) {
-    const Solution& solution = randomInstance.getBestSolution();
+    Solution& solution = randomInstance.getBestSolution();
     EXPECT_EQ(solution.getCost(), 0.0);  // Asumiendo que el costo inicial es 0.0 en la solución por defecto
 }
 
