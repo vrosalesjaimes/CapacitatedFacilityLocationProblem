@@ -21,7 +21,10 @@ TransportProblem::TransportProblem(const std::vector<std::vector<int>> &costs, c
     }
 }
 
-
+const std::vector<std::vector<int>>& TransportProblem::getCosts() const
+{
+    return costs;
+}
 
 int TransportProblem::getTotalDemand() const {
     return totalDemand;
@@ -45,6 +48,21 @@ int TransportProblem::getTotalCost() const {
 
 const std::vector<std::vector<int>>& TransportProblem::getCostMatrix() const {
     return costMatrix;
+}
+
+const std::vector<int> &TransportProblem::getCustomerDemands() const
+{
+    return customerDemands;
+}
+
+const std::vector<int> &TransportProblem::getFacilityCapacities() const
+{
+    return facilityCapacities;
+}
+
+const std::vector<uint8_t> &TransportProblem::getFacilityStatus() const
+{
+    return facilityStatus;
 }
 
 // Setters

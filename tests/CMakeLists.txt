@@ -9,7 +9,7 @@ add_executable(tests  main.cpp
                       Reader/holmberg_instance_reader_test.cpp
                       Reader/tbed_instance_reader_test.cpp
                       Reader/yang_instance_reader_test.cpp
-                      TransportProblem/transport_solver.cpp
+                      TransportProblem/transport_problem_test.cpp
 )
 
 target_link_libraries(tests

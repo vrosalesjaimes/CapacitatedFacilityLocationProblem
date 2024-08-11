@@ -155,6 +155,11 @@ public:
      */
     void setCostMatrix(const std::vector<std::vector<int>>& costMatrix);
 
+    /**
+     * @brief Balances the transportation problem by adding dummy demand.
+     */
+    void balanceProblem();
+
 private:
     const std::vector<std::vector<int>> &costs;                         ///< Cost matrix for the transportation problem.
     const std::vector<int> &customerDemands;                            ///< Vector of customer demands.
@@ -178,11 +183,6 @@ private:
      * @brief Adds a dummy demand to balance the problem.
      */
     void addDummyDemand();
-
-    /**
-     * @brief Balances the transportation problem by adding dummy demand.
-     */
-    void balanceProblem();
 
     /**
      * @brief Updates the modified cost matrix.
