@@ -22,7 +22,7 @@ namespace Demands
 
     vector<int> PROBLEM_2_BALANCED_VAM = {70, 40, 70, 35};
 
-    vector<int> PROBLEM_3_UNBALANCED_VAM = {45, 20, 30};
+    vector<int> PROBLEM_3_UNBALANCED_VAM = {45, 20, 30, 30};
 
     vector<int> PROBLEM_4_MODI = {50, 60, 70, 95};
 
@@ -34,7 +34,7 @@ namespace Demands
 
     vector<int> PROBLEM_8_MODI = {55, 45, 30};
 
-    vector<int> PROBLEM_9_UNBALANCED_VAM = {30,20,15,10,20,22};
+    vector<int> PROBLEM_9_UNBALANCED_VAM = {30, 20, 15, 10, 20, 22};
 }
 
 namespace Supplies
@@ -55,7 +55,7 @@ namespace Supplies
 
     vector<int> PROBLEM_8_MODI = {40, 50, 40};
 
-    vector<int> PROBLEM_9_UNBALANCED_VAM = {15,25,42,35};
+    vector<int> PROBLEM_9_UNBALANCED_VAM = {15, 25, 42, 35};
 }
 
 namespace Costs
@@ -85,7 +85,7 @@ namespace CostMatrices
 
     vector<vector<int>> PROBLEM_2_BALANCED_VAM = {{5, 2, 7, 3}, {3, 6, 6, 1}, {6, 1, 2, 4}, {4, 3, 6, 6}};
 
-    vector<vector<int>> PROBLEM_3_UNBALANCED_VAM = {{8, 15, 10}, {10, 12, 14}, {14, 9, 15}, {0, 0, 0}};
+    vector<vector<int>> PROBLEM_3_UNBALANCED_VAM = {{8, 15, 10, 0}, {10, 12, 14, 0}, {14, 9, 15, 0}};
 
     vector<vector<int>> PROBLEM_4_MODI = {{17, 20, 13, 12}, {15, 21, 26, 25}, {15, 14, 15, 17}};
 
