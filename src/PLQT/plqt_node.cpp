@@ -1,4 +1,4 @@
-#include "PLQT/PLQTNode.h"
+#include "PLQT/plqt_node.h"
 #include <sstream>
 
 PLQTNode::PLQTNode(const std::vector<bool>& data)

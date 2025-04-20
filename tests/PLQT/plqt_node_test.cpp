@@ -1,4 +1,4 @@
-#include "PLQT/PLQTNode.h"
+#include "PLQT/plqt_node.h"
 #include <gtest/gtest.h>
 
 TEST(PLQTNodeTest, ConstructorAndGetters) {

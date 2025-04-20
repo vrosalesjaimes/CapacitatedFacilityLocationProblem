@@ -9,7 +9,7 @@ add_executable(tests  main.cpp
                       Reader/holmberg_instance_reader_test.cpp
                       Reader/tbed_instance_reader_test.cpp
                       Reader/yang_instance_reader_test.cpp
-                      PLQT/PLQTNode_test.cpp
+                      PLQT/plqt_node_test.cpp
 )
 
 target_link_libraries(tests
