@@ -8,7 +8,8 @@ add_executable(CapacitatedFacilityLocationProblem main.cpp
                                                 Reader/tbed_instance_reader.cpp
                                                 Reader/yang_instance_reader.cpp
                                                 TransportProblem/transport_problem.cpp
-                                                TransportProblem/transport_solver.cpp)
+                                                TransportProblem/transport_solver.cpp
+                                                PLQT/PLQTNode.cpp)
 
 add_library(CapacityFacilityLocationLib STATIC 
                                             CapacitatedFacilityLocationProblem/initializer.cpp
@@ -20,6 +21,7 @@ add_library(CapacityFacilityLocationLib STATIC
                                             Reader/yang_instance_reader.cpp
                                             TransportProblem/transport_problem.cpp
                                             TransportProblem/transport_solver.cpp
+                                            PLQT/PLQTNode.cpp
 )
 
 target_include_directories(CapacityFacilityLocationLib PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../include)
