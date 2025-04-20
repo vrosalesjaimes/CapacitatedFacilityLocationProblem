@@ -10,6 +10,7 @@ add_executable(tests  main.cpp
                       Reader/tbed_instance_reader_test.cpp
                       Reader/yang_instance_reader_test.cpp
                       PLQT/plqt_node_test.cpp
+                      PLQT/power_of_two_test.cpp
 )
 
 target_link_libraries(tests
