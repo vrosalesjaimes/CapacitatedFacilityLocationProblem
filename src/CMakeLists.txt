@@ -10,7 +10,8 @@ add_executable(CapacitatedFacilityLocationProblem main.cpp
                                                 TransportProblem/transport_problem.cpp
                                                 TransportProblem/transport_solver.cpp
                                                 PLQT/plqt_node.cpp
-                                                PLQT/power_of_two.cpp)
+                                                PLQT/power_of_two.cpp
+                                                PLQT/plqt.cpp)
 
 add_library(CapacityFacilityLocationLib STATIC 
                                             CapacitatedFacilityLocationProblem/initializer.cpp
@@ -24,6 +25,7 @@ add_library(CapacityFacilityLocationLib STATIC
                                             TransportProblem/transport_solver.cpp
                                             PLQT/plqt_node.cpp
                                             PLQT/power_of_two.cpp
+                                            PLQT/plqt.cpp
                                             
 )
 

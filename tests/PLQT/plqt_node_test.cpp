@@ -2,7 +2,7 @@
 #include <gtest/gtest.h>
 
 TEST(PLQTNodeTest, ConstructorAndGetters) {
-    std::vector<bool> data = {1, 0, 1};
+    std::vector<int> data = {1, 0, 1};
     PLQTNode node(data);
 
     EXPECT_EQ(node.getData(), data);

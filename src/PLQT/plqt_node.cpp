@@ -1,14 +1,14 @@
 #include "PLQT/plqt_node.h"
 #include <sstream>
 
-PLQTNode::PLQTNode(const std::vector<bool>& data)
+PLQTNode::PLQTNode(const std::vector<int>& data)
     : data_(data), parent_(nullptr), nextSibling_(nullptr), firstChild_(nullptr), successorOrder_(0) {}
 
-std::vector<bool> PLQTNode::getData() const {
+std::vector<int> PLQTNode::getData() const {
     return data_;
 }
 
-void PLQTNode::setData(const std::vector<bool>& data) {
+void PLQTNode::setData(const std::vector<int>& data) {
     data_ = data;
 }
 
@@ -80,7 +80,7 @@ bool PLQTNode::isDeepEqual(const PLQTNode& other) const {
     return true;
 }
 
-PLQTNode* PLQTNode::searchNode(const std::vector<bool>& data) {
+PLQTNode* PLQTNode::searchNode(const std::vector<int>& data) {
     if (data_ == data) {
         return this;
     }

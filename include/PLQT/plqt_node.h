@@ -12,15 +12,15 @@ class PLQTNode {
 public:
     /**
      * @brief Constructs a node with the given binary data.
-     * @param data A vector of boolean values representing binary data.
+     * @param data A vector of integer values representing binary data.
      */
-    explicit PLQTNode(const std::vector<bool>& data);
+    explicit PLQTNode(const std::vector<int>& data);
 
     /** @brief Returns the binary data of the node. */
-    std::vector<bool> getData() const;
+    std::vector<int> getData() const;
 
     /** @brief Sets the binary data of the node. */
-    void setData(const std::vector<bool>& data);
+    void setData(const std::vector<int>& data);
 
     /** @brief Returns the parent of the node. */
     PLQTNode* getParent() const;
@@ -75,7 +75,7 @@ public:
      * @param data The data to search for.
      * @return A pointer to the found node, or nullptr if not found.
      */
-    PLQTNode* searchNode(const std::vector<bool>& data);
+    PLQTNode* searchNode(const std::vector<int>& data);
 
     /**
      * @brief Returns a string representation of the node.
@@ -84,7 +84,7 @@ public:
     std::string toString() const;
 
 private:
-    std::vector<bool> data_;
+    std::vector<int> data_;
     PLQTNode* parent_;
     PLQTNode* nextSibling_;
     PLQTNode* firstChild_;
