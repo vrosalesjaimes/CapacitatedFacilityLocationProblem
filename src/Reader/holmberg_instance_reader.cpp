@@ -40,7 +40,5 @@ Instance HolmbergInstanceReader::readInstance(const string& filename) const {
     vector<bool> y(numFacilities);
     vector<vector<int>> x(numFacilities, vector<int>(numCustomers));
 
-    Solution bestSolution(0.0, y, x);
-
-    return Instance(numFacilities, numCustomers, facilityCapacities, customerDemands, openingCosts, transportationCosts, bestSolution);
+    return Instance(numFacilities, numCustomers, facilityCapacities, customerDemands, openingCosts, transportationCosts);
 }

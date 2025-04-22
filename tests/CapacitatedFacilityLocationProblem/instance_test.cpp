@@ -44,9 +44,8 @@ namespace {
         vector<bool> y(numFacilities);
         vector<vector<int>> x(numFacilities, vector<int>(numCustomers));
 
-        Solution bestSolution(0.0, y, x);
 
-        return Instance(numFacilities, numCustomers, facilityCapacities, customerDemands, openingCosts, transportationCosts, bestSolution);
+        return Instance(numFacilities, numCustomers, facilityCapacities, customerDemands, openingCosts, transportationCosts);
     }
 
     // Instancia global aleatoria
@@ -110,10 +109,3 @@ TEST(InstanceTest, GetTransportationCostsTest) {
         }
     }
 }
-
-// Test del getter getBestSolution
-TEST(InstanceTest, GetBestSolutionTest) {
-    Solution& solution = randomInstance.getBestSolution();
-    EXPECT_EQ(solution.getCost(), 0.0);  // Asumiendo que el costo inicial es 0.0 en la solución por defecto
-}
-

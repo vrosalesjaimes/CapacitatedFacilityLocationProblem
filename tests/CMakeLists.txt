@@ -4,7 +4,6 @@ include(GoogleTest)
 
 add_executable(tests  main.cpp
                       CapacitatedFacilityLocationProblem/instance_test.cpp
-                      CapacitatedFacilityLocationProblem/solution_test.cpp
                       Reader/beasley_instance_reader_test.cpp
                       Reader/holmberg_instance_reader_test.cpp
                       Reader/tbed_instance_reader_test.cpp

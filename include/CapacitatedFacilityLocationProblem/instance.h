@@ -2,7 +2,6 @@
 #define INSTANCE_H
 
 #include <vector>
-#include "solution.h"
 
 using namespace std;
 
@@ -26,8 +25,7 @@ public:
              vector<int>& facilityCapacities, 
              vector<int>& customerDemands,
              vector<double>& openingCosts,
-             vector<vector<double>>& transportationCosts,
-             Solution& bestSolution);
+             vector<vector<double>>& transportationCosts);
 
     /**
      * @brief Gets the number of facilities.
@@ -71,13 +69,6 @@ public:
      */
     vector<vector<double>>& getTransportationCosts() ;
 
-    /**
-     * @brief Gets the best solution for this instance.
-     * 
-     * @return Solution& The best solution.
-     */
-    Solution& getBestSolution() ;
-
 private:
     int numFacilities; ///< Number of facilities.
     int numCustomers; ///< Number of customers.
@@ -85,7 +76,6 @@ private:
     vector<int> customerDemands; ///< Demands of each customer.
     vector<double> openingCosts; ///< Opening costs of each facility.
     vector<vector<double>> transportationCosts; ///< Transportation costs from facilities to customers.
-    Solution bestSolution; ///< The best solution found for this instance.
 };
 
 #endif // INSTANCE_H

@@ -7,12 +7,10 @@ Instance::Instance(int numFacilities, int numCustomers,
                    vector<int>& facilityCapacities, 
                    vector<int>& customerDemands,
                    vector<double>& openingCosts,
-                   vector<vector<double>>& transportationCosts,
-                   Solution& bestSolution)
+                   vector<vector<double>>& transportationCosts)
     : numFacilities(numFacilities), numCustomers(numCustomers), 
       facilityCapacities(facilityCapacities), customerDemands(customerDemands), 
-      openingCosts(openingCosts), transportationCosts(transportationCosts), 
-      bestSolution(bestSolution) 
+      openingCosts(openingCosts), transportationCosts(transportationCosts) 
 {
     if (facilityCapacities.size() != numFacilities || 
         openingCosts.size() != numFacilities || 
@@ -47,8 +45,4 @@ vector<double>& Instance::getOpeningCosts() {
 
 vector<vector<double>>& Instance::getTransportationCosts() {
     return transportationCosts;
-}
-
-Solution& Instance::getBestSolution() {
-    return bestSolution;
 }
