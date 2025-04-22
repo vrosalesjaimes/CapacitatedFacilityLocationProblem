@@ -11,9 +11,12 @@ add_executable(CapacitatedFacilityLocationProblem main.cpp
                                                 TransportProblem/transport_solver.cpp
                                                 PLQT/plqt_node.cpp
                                                 PLQT/power_of_two.cpp
-                                                PLQT/plqt.cpp)
+                                                PLQT/plqt.cpp
+                                                ContinuousKnapsackProblem/continuous_item.cpp
+                                                ContinuousKnapsackProblem/continuous_knapsack.cpp
+)
 
-add_library(CapacityFacilityLocationLib STATIC 
+add_library(CapacityFacilityLocationLib STATIC
                                             CapacitatedFacilityLocationProblem/initializer.cpp
                                             CapacitatedFacilityLocationProblem/instance.cpp
                                             CapacitatedFacilityLocationProblem/solution.cpp
@@ -26,7 +29,8 @@ add_library(CapacityFacilityLocationLib STATIC
                                             PLQT/plqt_node.cpp
                                             PLQT/power_of_two.cpp
                                             PLQT/plqt.cpp
-                                            
+                                            ContinuousKnapsackProblem/continuous_item.cpp
+                                            ContinuousKnapsackProblem/continuous_knapsack.cpp
 )
 
 target_include_directories(CapacityFacilityLocationLib PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../include)
