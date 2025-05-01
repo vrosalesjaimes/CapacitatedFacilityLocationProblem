@@ -118,7 +118,7 @@ TEST(TransportationProblemTest, SettersThrowOnInvalidSize)
 TEST(TransportationProblemTest, PlaceholderMethodsDoNotThrow)
 {
     auto supply = generateRandomVector(3);
-    auto demand = generateRandomVector(3);
+    auto demand = supply;
     auto costMatrix = generateRandomMatrix(3, 3);
     TransportationProblem tp(supply, demand, costMatrix);
 
@@ -150,9 +150,10 @@ TEST(TransportationProblemTest, VogelsApproximationMethod)
 TEST(TransportationProblemTest, HungarianMethod)
 {
     auto supply = generateRandomVector(3);
-    auto demand = generateRandomVector(3);
+    auto demand = supply;
     auto costMatrix = generateRandomMatrix(3, 3);
     TransportationProblem tp(supply, demand, costMatrix);
+    tp.balance();
 
     EXPECT_NO_THROW(tp.solveHungarianMethod());
 }
@@ -249,12 +250,11 @@ TEST(TransportationProblemMethodTest, SolveNorthwestCornerBalanced2)
 TEST(TransportationProblemMethodTest, SolveVAMBalanced)
 {
     TransportationProblem problem(
-        {15,25,10},
-        {5,15,15,15},
-        {{10,2,20,11},
-         {7,9,20,12},
-         {4,14,16,18}});
-
+        {15, 25, 10},
+        {5, 15, 15, 15},
+        {{10, 2, 20, 11},
+         {7, 9, 20, 12},
+         {4, 14, 16, 18}});
 
     problem.solveVogelsApproximation();
     auto assignment = problem.getAssignmentMatrix();
@@ -278,12 +278,11 @@ TEST(TransportationProblemMethodTest, SolveVAMBalanced)
 TEST(TransportationProblemMethodTest, SolveVAMUnBalanced)
 {
     TransportationProblem problem(
-        {15,25,20},
-        {5,15,15,15},
-        {{10,2,20,11},
-         {7,9,20,12},
-         {4,14,16,18}});
-
+        {15, 25, 20},
+        {5, 15, 15, 15},
+        {{10, 2, 20, 11},
+         {7, 9, 20, 12},
+         {4, 14, 16, 18}});
 
     problem.balance();
     problem.solveVogelsApproximation();
@@ -310,21 +309,36 @@ TEST(TransportationProblemMethodTest, SolveVAMUnBalanced)
     EXPECT_EQ(problem.getTotalCost(), 470);
 }
 
-TEST(TransportationProblemMethodTest, SolveHungarianMethod)
+TEST(TransportationProblemMethodTest, SolveHungarianMethodBalanced)
 {
     TransportationProblem problem(
-        {5,4,6},
-        {2,3,3,5,2},
-        {{5,3,4,5,6},
-         {2,6,5,3,2},
-         {6,4,3,4,4}});
+        {5, 4, 6},
+        {2, 3, 3, 5, 2},
+        {{5, 3, 4, 5, 6},
+         {2, 6, 5, 3, 2},
+         {6, 4, 3, 4, 4}});
 
     problem.solveHungarianMethod();
-    auto assignment = problem.getAssignmentMatrix();
 
     EXPECT_EQ(problem.getTotalCost(), 48);
 }
 
+TEST(TransportationProblemMethodTest, SolveHungarianMethodUnBalanced)
+{
+    TransportationProblem problem(
+        {5, 4, 6},
+        {2, 3, 3, 5, 1},
+        {{5, 3, 4, 5, 6},
+         {2, 6, 5, 3, 2},
+         {6, 4, 3, 4, 4}});
+
+    EXPECT_THROW(problem.solveHungarianMethod(), std::logic_error);
+
+    problem.balance();
+    problem.solveHungarianMethod();
+
+    EXPECT_EQ(problem.getTotalCost(), 44);
+}
 
 TEST(TransportationProblemBalanceTest, AlreadyBalanced)
 {
