@@ -13,6 +13,8 @@ add_executable(tests  main.cpp
                       PLQT/plqt_test.cpp
                       ContinuousKnapsackProblem/continuous_item_test.cpp
                       ContinuousKnapsackProblem/continuous_knapsack_test.cpp
+                      TransportProblem/transport_problem_test.cpp
+                      TransportProblem/cflp_transport_problem_test.cpp
 )
 
 target_link_libraries(tests
