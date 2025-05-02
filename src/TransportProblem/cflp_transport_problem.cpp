@@ -22,6 +22,7 @@ CFLPTransportSubproblem::CFLPTransportSubproblem(const std::vector<std::vector<i
         throw std::invalid_argument("Cost matrix column count must match demand size.");
 
     buildTransportProblem();
+    transportProblem_.calculateTotalSupplyAndDemand();
 }
 
 /**
@@ -33,7 +34,17 @@ void CFLPTransportSubproblem::toggleFacility(int facilityIndex)
         throw std::out_of_range("Invalid facility index");
 
     openFacilities_[facilityIndex] = !openFacilities_[facilityIndex];
+    
     updateSubproblem();
+    
+    if (openFacilities_[facilityIndex])
+    {
+        transportProblem_.setTotalSupply(transportProblem_.getTotalSupply() + allCapacities_[facilityIndex]);
+    }
+    else
+    {
+        transportProblem_.setTotalSupply(transportProblem_.getTotalSupply() - allCapacities_[facilityIndex]);
+    }
 }
 
 /**

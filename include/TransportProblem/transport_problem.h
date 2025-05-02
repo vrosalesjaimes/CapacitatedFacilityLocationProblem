@@ -73,6 +73,18 @@ public:
     const std::vector<int> &getDemand() const;
 
     /**
+     * @brief Returns the total supply.
+     * @return Total supply as an integer.
+     */
+    int getTotalSupply() const;
+
+    /**
+     * @brief Returns the total demand.
+     * @return Total demand as an integer.
+     */
+    int getTotalDemand() const;
+
+    /**
      * @brief Sets the cost matrix (replaces the current one).
      * @param newCostMatrix New cost matrix to use.
      */
@@ -91,9 +103,26 @@ public:
     void setDemand(const std::vector<int> &newDemand);
 
     /**
+     * @brief Sets the total supply.
+     * @param newSupply New total supply value.
+     */
+    void setTotalSupply(int newSupply);
+
+    /**
+     * @brief Sets the total demand.
+     * @param newDemand New total demand value.
+     */
+    void setTotalDemand(int newDemand);
+
+    /**
      * @brief Balances the transportation problem by adding a dummy demand if total supply exceeds total demand.
      */
     void balance();
+
+    /**
+     * @brief Calculates the total supply and demand.
+     */
+    void calculateTotalSupplyAndDemand();
 
 private:
     std::vector<int> supply_;                        ///< Vector of supply values.
@@ -101,8 +130,10 @@ private:
     std::vector<std::vector<int>> costMatrix_;       ///< Cost matrix.
     std::vector<std::vector<int>> assignmentMatrix_; ///< Current assignment matrix.
     int totalCost_;                                  ///< Total cost of current assignment.
+    int totalSupply_;                                ///< Total supply.
+    int totalDemand_;                                ///< Total demand.
 
-    void initializeAssignment(); ///< Helper to reset/initialize assignment.
+    void initializeAssignment(); ///< Helper to reset/initialize assignment
 };
 
 #endif // TRANSPORTATION_PROBLEM_H

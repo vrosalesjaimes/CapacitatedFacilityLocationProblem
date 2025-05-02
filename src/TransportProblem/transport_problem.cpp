@@ -214,11 +214,7 @@ void TransportationProblem::solveHungarianMethod()
     size_t m = supply_.size();
     size_t n = demand_.size();
 
-    // Paso 1: Verificar que la oferta y demanda estén balanceadas
-    int totalSupply = std::accumulate(supply_.begin(), supply_.end(), 0);
-    int totalDemand = std::accumulate(demand_.begin(), demand_.end(), 0);
-
-    if (totalSupply != totalDemand)
+    if (totalSupply_ != totalDemand_)
     {
         throw std::logic_error("Supply and demand must be balanced for the Hungarian method.");
     }
@@ -584,22 +580,40 @@ void TransportationProblem::setDemand(const std::vector<int> &newDemand)
     initializeAssignment();
 }
 
+void TransportationProblem::setTotalSupply(int newTotalSupply)
+{
+    totalSupply_ = newTotalSupply;
+}
+
+int TransportationProblem::getTotalSupply() const
+{
+    return totalSupply_;
+}
+
+void TransportationProblem::setTotalDemand(int newTotalDemand)
+{
+    totalDemand_ = newTotalDemand;
+}
+
+int TransportationProblem::getTotalDemand() const
+{
+    return totalDemand_;
+}
+
 void TransportationProblem::balance()
 {
-    int totalSupply = std::accumulate(supply_.begin(), supply_.end(), 0);
-    int totalDemand = std::accumulate(demand_.begin(), demand_.end(), 0);
 
-    if (totalSupply == totalDemand)
+    if (totalSupply_ == totalDemand_)
     {
         return;
     }
 
-    if (totalSupply < totalDemand)
+    if (totalSupply_ < totalDemand_)
     {
         throw std::logic_error("This class only supports total supply >= total demand.");
     }
 
-    int dummyDemand = totalSupply - totalDemand;
+    int dummyDemand = totalSupply_ - totalDemand_;
 
     demand_.push_back(dummyDemand);
 
@@ -612,4 +626,12 @@ void TransportationProblem::balance()
     {
         row.push_back(0);
     }
+
+    totalDemand_ = totalSupply_;
+}
+
+void TransportationProblem::calculateTotalSupplyAndDemand()
+{
+    totalSupply_ = std::accumulate(supply_.begin(), supply_.end(), 0);
+    totalDemand_ = std::accumulate(demand_.begin(), demand_.end(), 0);
 }

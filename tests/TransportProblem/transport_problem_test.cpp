@@ -40,6 +40,7 @@ TEST(TransportationProblemTest, ValidConstructionAndAccessors)
     auto costMatrix = generateRandomMatrix(supplySize, demandSize);
 
     TransportationProblem tp(supply, demand, costMatrix);
+    tp.calculateTotalSupplyAndDemand();
 
     EXPECT_EQ(tp.getSupply(), supply);
     EXPECT_EQ(tp.getDemand(), demand);
@@ -80,6 +81,7 @@ TEST(TransportationProblemTest, SettersWorkCorrectly)
     auto demand = generateRandomVector(4);
     auto costMatrix = generateRandomMatrix(3, 4);
     TransportationProblem tp(supply, demand, costMatrix);
+    tp.calculateTotalSupplyAndDemand();
 
     auto newSupply = generateRandomVector(3);
     auto newDemand = generateRandomVector(4);
@@ -101,6 +103,7 @@ TEST(TransportationProblemTest, SettersThrowOnInvalidSize)
     auto demand = generateRandomVector(2);
     auto costMatrix = generateRandomMatrix(2, 2);
     TransportationProblem tp(supply, demand, costMatrix);
+    tp.calculateTotalSupplyAndDemand();
 
     auto wrongCostMatrix = generateRandomMatrix(3, 2);
     EXPECT_THROW(tp.setCostMatrix(wrongCostMatrix), std::invalid_argument);
@@ -121,6 +124,7 @@ TEST(TransportationProblemTest, PlaceholderMethodsDoNotThrow)
     auto demand = supply;
     auto costMatrix = generateRandomMatrix(3, 3);
     TransportationProblem tp(supply, demand, costMatrix);
+    tp.calculateTotalSupplyAndDemand();
 
     EXPECT_NO_THROW(tp.solveNorthwestCorner());
     EXPECT_NO_THROW(tp.solveVogelsApproximation());
@@ -133,6 +137,7 @@ TEST(TransportationProblemTest, NorwesthwestCornerMethod)
     auto demand = generateRandomVector(3);
     auto costMatrix = generateRandomMatrix(3, 3);
     TransportationProblem tp(supply, demand, costMatrix);
+    tp.calculateTotalSupplyAndDemand();
 
     EXPECT_NO_THROW(tp.solveNorthwestCorner());
 }
@@ -143,6 +148,7 @@ TEST(TransportationProblemTest, VogelsApproximationMethod)
     auto demand = generateRandomVector(3);
     auto costMatrix = generateRandomMatrix(3, 3);
     TransportationProblem tp(supply, demand, costMatrix);
+    tp.calculateTotalSupplyAndDemand();
 
     EXPECT_NO_THROW(tp.solveVogelsApproximation());
 }
@@ -153,6 +159,7 @@ TEST(TransportationProblemTest, HungarianMethod)
     auto demand = supply;
     auto costMatrix = generateRandomMatrix(3, 3);
     TransportationProblem tp(supply, demand, costMatrix);
+    tp.calculateTotalSupplyAndDemand();
     tp.balance();
 
     EXPECT_NO_THROW(tp.solveHungarianMethod());
@@ -166,7 +173,8 @@ TEST(TransportationProblemMethodTest, SolveNorthwestCornerBalanced)
         {{10, 2, 20, 11},
          {12, 7, 9, 20},
          {4, 14, 16, 18}});
-
+    
+    problem.calculateTotalSupplyAndDemand();
     problem.solveNorthwestCorner();
 
     auto assignment = problem.getAssignmentMatrix();
@@ -195,6 +203,7 @@ TEST(TransportationProblemMethodTest, SolveNorthwestCornerUnBalanced)
          {12, 7, 9, 20},
          {4, 14, 16, 18}});
 
+    problem.calculateTotalSupplyAndDemand();
     problem.solveNorthwestCorner();
 
     auto assignment = problem.getAssignmentMatrix();
@@ -224,6 +233,7 @@ TEST(TransportationProblemMethodTest, SolveNorthwestCornerBalanced2)
          {6, 1, 2, 4},
          {4, 3, 6, 6}});
 
+    problem.calculateTotalSupplyAndDemand();
     problem.solveNorthwestCorner();
     auto assignment = problem.getAssignmentMatrix();
 
@@ -256,6 +266,7 @@ TEST(TransportationProblemMethodTest, SolveVAMBalanced)
          {7, 9, 20, 12},
          {4, 14, 16, 18}});
 
+    problem.calculateTotalSupplyAndDemand();
     problem.solveVogelsApproximation();
     auto assignment = problem.getAssignmentMatrix();
 
@@ -284,6 +295,7 @@ TEST(TransportationProblemMethodTest, SolveVAMUnBalanced)
          {7, 9, 20, 12},
          {4, 14, 16, 18}});
 
+    problem.calculateTotalSupplyAndDemand();
     problem.balance();
     problem.solveVogelsApproximation();
     auto assignment = problem.getAssignmentMatrix();
@@ -318,6 +330,7 @@ TEST(TransportationProblemMethodTest, SolveHungarianMethodBalanced)
          {2, 6, 5, 3, 2},
          {6, 4, 3, 4, 4}});
 
+    problem.calculateTotalSupplyAndDemand();
     problem.solveHungarianMethod();
 
     EXPECT_EQ(problem.getTotalCost(), 48);
@@ -332,6 +345,7 @@ TEST(TransportationProblemMethodTest, SolveHungarianMethodUnBalanced)
          {2, 6, 5, 3, 2},
          {6, 4, 3, 4, 4}});
 
+    problem.calculateTotalSupplyAndDemand();
     EXPECT_THROW(problem.solveHungarianMethod(), std::logic_error);
 
     problem.balance();
@@ -352,6 +366,7 @@ TEST(TransportationProblemBalanceTest, AlreadyBalanced)
 
     auto costMatrix = generateRandomMatrix(m, n);
     TransportationProblem tp(supply, demand, costMatrix);
+    tp.calculateTotalSupplyAndDemand();
 
     EXPECT_EQ(tp.getSupply().size(), m);
     EXPECT_EQ(tp.getDemand().size(), n);
@@ -368,6 +383,7 @@ TEST(TransportationProblemBalanceTest, SupplyGreaterThanDemand)
 
     auto costMatrix = generateRandomMatrix(m, n);
     TransportationProblem tp(supply, demand, costMatrix);
+    tp.calculateTotalSupplyAndDemand();
     tp.balance();
 
     EXPECT_EQ(tp.getDemand().size(), n + 1);
@@ -388,6 +404,7 @@ TEST(TransportationProblemBalanceTest, DemandGreaterThanSupplyThrows)
 
     auto costMatrix = generateRandomMatrix(m, n);
     TransportationProblem tp(supply, demand, costMatrix);
+    tp.calculateTotalSupplyAndDemand();
 
     EXPECT_THROW(tp.balance(), std::logic_error);
 }
