@@ -5,11 +5,11 @@
 
 /**
  * @class TransportationProblem
- * @brief Efficient class to solve the transportation problem using various methods.
+ * @brief Class to solve the transportation problem using the Hungarian method.
  *
  * This class stores supply, demand, cost matrix, and the current assignment matrix.
- * It supports solving the problem using Northwest Corner, Vogel's Approximation,
- * and the Hungarian method.
+ * It supports solving the problem using the Hungarian method and includes methods
+ * for getting and setting data members.
  */
 class TransportationProblem
 {
@@ -28,17 +28,7 @@ public:
     ~TransportationProblem() = default;
 
     /**
-     * @brief Solves the problem using the Northwest Corner Method.
-     */
-    void solveNorthwestCorner();
-
-    /**
-     * @brief Solves the problem using Vogel's Approximation Method.
-     */
-    void solveVogelsApproximation();
-
-    /**
-     * @brief Solves the problem using the Hungarian Method.
+     * @brief Solves the transportation problem using the Hungarian Method.
      */
     void solveHungarianMethod();
 
@@ -61,10 +51,22 @@ public:
     const std::vector<std::vector<int>> &getCostMatrix() const;
 
     /**
+     * @brief Sets the cost matrix.
+     * @param newCostMatrix New cost matrix to be assigned.
+     */
+    void setCostMatrix(const std::vector<std::vector<int>> &newCostMatrix);
+
+    /**
      * @brief Returns the supply vector.
      * @return Vector of supply values.
      */
     const std::vector<int> &getSupply() const;
+
+    /**
+     * @brief Sets the supply vector.
+     * @param newSupply New supply vector to be assigned.
+     */
+    void setSupply(const std::vector<int> &newSupply);
 
     /**
      * @brief Returns the demand vector.
@@ -73,34 +75,16 @@ public:
     const std::vector<int> &getDemand() const;
 
     /**
+     * @brief Sets the demand vector.
+     * @param newDemand New demand vector to be assigned.
+     */
+    void setDemand(const std::vector<int> &newDemand);
+
+    /**
      * @brief Returns the total supply.
      * @return Total supply as an integer.
      */
     int getTotalSupply() const;
-
-    /**
-     * @brief Returns the total demand.
-     * @return Total demand as an integer.
-     */
-    int getTotalDemand() const;
-
-    /**
-     * @brief Sets the cost matrix (replaces the current one).
-     * @param newCostMatrix New cost matrix to use.
-     */
-    void setCostMatrix(const std::vector<std::vector<int>> &newCostMatrix);
-
-    /**
-     * @brief Sets the supply vector.
-     * @param newSupply New supply vector to use.
-     */
-    void setSupply(const std::vector<int> &newSupply);
-
-    /**
-     * @brief Sets the demand vector.
-     * @param newDemand New demand vector to use.
-     */
-    void setDemand(const std::vector<int> &newDemand);
 
     /**
      * @brief Sets the total supply.
@@ -109,18 +93,24 @@ public:
     void setTotalSupply(int newSupply);
 
     /**
+     * @brief Returns the total demand.
+     * @return Total demand as an integer.
+     */
+    int getTotalDemand() const;
+
+    /**
      * @brief Sets the total demand.
      * @param newDemand New total demand value.
      */
     void setTotalDemand(int newDemand);
 
     /**
-     * @brief Balances the transportation problem by adding a dummy demand if total supply exceeds total demand.
+     * @brief Balances the transportation problem by adding dummy demand if necessary.
      */
     void balance();
 
     /**
-     * @brief Calculates the total supply and demand.
+     * @brief Calculates total supply and demand from the current vectors.
      */
     void calculateTotalSupplyAndDemand();
 
@@ -133,7 +123,12 @@ private:
     int totalSupply_;                                ///< Total supply.
     int totalDemand_;                                ///< Total demand.
 
-    void initializeAssignment(); ///< Helper to reset/initialize assignment
+    /**
+     * @brief Initializes or resets the assignment matrix.
+     */
+    void initializeAssignment();
+
+    
 };
 
 #endif // TRANSPORTATION_PROBLEM_H
