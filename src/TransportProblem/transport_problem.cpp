@@ -36,6 +36,8 @@ void TransportationProblem::solveHungarianMethod()
 {
     initializeAssignment();
 
+    printTransportData(supply_, demand_, costMatrix_);
+
     size_t m = supply_.size();
     size_t n = demand_.size();
 
@@ -84,8 +86,7 @@ void TransportationProblem::solveHungarianMethod()
                 costMatrix_[i][j],
                 0,
                 false,
-                false
-            };
+                false};
         }
     }
 
@@ -420,4 +421,33 @@ void TransportationProblem::calculateTotalSupplyAndDemand()
 {
     totalSupply_ = std::accumulate(supply_.begin(), supply_.end(), 0);
     totalDemand_ = std::accumulate(demand_.begin(), demand_.end(), 0);
+}
+
+void TransportationProblem::printTransportData(const std::vector<int> &supply,
+                        const std::vector<int> &demand,
+                        const std::vector<std::vector<int>> &costMatrix)
+{
+    std::cout << "Supply: ";
+    for (int s : supply)
+    {
+        std::cout << s << " ";
+    }
+    std::cout << "\n";
+
+    std::cout << "Demand: ";
+    for (int d : demand)
+    {
+        std::cout << d << " ";
+    }
+    std::cout << "\n";
+
+    std::cout << "Cost Matrix:\n";
+    for (const auto &row : costMatrix)
+    {
+        for (int cost : row)
+        {
+            std::cout << cost << "\t";
+        }
+        std::cout << "\n";
+    }
 }

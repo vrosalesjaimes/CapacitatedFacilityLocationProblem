@@ -128,6 +128,10 @@ private:
      */
     void initializeAssignment();
 
+    void printTransportData(const std::vector<int> &supply,
+                              const std::vector<int> &demand,
+                              const std::vector<std::vector<int>> &costMatrix);
+
     
 };
 

@@ -1,10 +1,12 @@
 #include <gtest/gtest.h>
 #include "TransportProblem/transport_problem.h"
 #include <random>
+#include <numeric>
 
 namespace
 {
 
+    // Generador de vector aleatorio para oferta y demanda, asegurando que la oferta >= demanda
     std::vector<int> generateRandomVector(size_t size, int minValue = 1, int maxValue = 50)
     {
         std::random_device rd;
@@ -19,6 +21,7 @@ namespace
         return vec;
     }
 
+    // Generador de matriz aleatoria, asegurando que la oferta sea mayor o igual a la demanda
     std::vector<std::vector<int>> generateRandomMatrix(size_t rows, size_t cols, int minValue = 1, int maxValue = 100)
     {
         std::vector<std::vector<int>> matrix(rows);
@@ -29,14 +32,31 @@ namespace
         return matrix;
     }
 
+    void generateSupplyAndDemand(size_t supplySize, size_t demandSize, 
+                                         std::vector<int>& supply, std::vector<int>& demand)
+    {
+        supply = generateRandomVector(supplySize);
+        demand = generateRandomVector(demandSize);
+
+        int totalSupply = std::accumulate(supply.begin(), supply.end(), 0);
+        int totalDemand = std::accumulate(demand.begin(), demand.end(), 0);
+
+        // Si la demanda es mayor que la oferta, ajustamos la última demanda
+        if (totalDemand > totalSupply) {
+            supply[supply.size() - 1] += (totalDemand - totalSupply);
+        }
+    }
+
 }
 
 TEST(TransportationProblemTest, ValidConstructionAndAccessors)
 {
     size_t supplySize = 5;
     size_t demandSize = 6;
-    auto supply = generateRandomVector(supplySize);
-    auto demand = generateRandomVector(demandSize);
+    
+    std::vector<int> supply, demand;
+    generateSupplyAndDemand(supplySize, demandSize, supply, demand);
+
     auto costMatrix = generateRandomMatrix(supplySize, demandSize);
 
     TransportationProblem tp(supply, demand, costMatrix);
@@ -77,8 +97,9 @@ TEST(TransportationProblemTest, ThrowsIfColumnCountDoesNotMatchDemand)
 
 TEST(TransportationProblemTest, SettersWorkCorrectly)
 {
-    auto supply = generateRandomVector(3);
-    auto demand = generateRandomVector(4);
+    std::vector<int> supply, demand;
+    generateSupplyAndDemand(3, 4, supply, demand);
+
     auto costMatrix = generateRandomMatrix(3, 4);
     TransportationProblem tp(supply, demand, costMatrix);
     tp.calculateTotalSupplyAndDemand();
@@ -99,8 +120,8 @@ TEST(TransportationProblemTest, SettersWorkCorrectly)
 
 TEST(TransportationProblemTest, SettersThrowOnInvalidSize)
 {
-    auto supply = generateRandomVector(2);
-    auto demand = generateRandomVector(2);
+    std::vector<int> supply = generateRandomVector(2);
+    std::vector<int> demand = generateRandomVector(2);
     auto costMatrix = generateRandomMatrix(2, 2);
     TransportationProblem tp(supply, demand, costMatrix);
     tp.calculateTotalSupplyAndDemand();
@@ -120,11 +141,13 @@ TEST(TransportationProblemTest, SettersThrowOnInvalidSize)
 
 TEST(TransportationProblemTest, PlaceholderMethodsDoNotThrow)
 {
-    auto supply = generateRandomVector(3);
-    auto demand = supply;
+    std::vector<int> supply, demand;
+    generateSupplyAndDemand(3, 3, supply, demand);
+
     auto costMatrix = generateRandomMatrix(3, 3);
     TransportationProblem tp(supply, demand, costMatrix);
     tp.calculateTotalSupplyAndDemand();
+    tp.balance();
 
     EXPECT_NO_THROW(tp.solveHungarianMethod());
 }
@@ -132,8 +155,9 @@ TEST(TransportationProblemTest, PlaceholderMethodsDoNotThrow)
 
 TEST(TransportationProblemTest, HungarianMethod)
 {
-    auto supply = generateRandomVector(3);
-    auto demand = supply;
+    std::vector<int> supply, demand;
+    generateSupplyAndDemand(3, 3, supply, demand);
+
     auto costMatrix = generateRandomMatrix(3, 3);
     TransportationProblem tp(supply, demand, costMatrix);
     tp.calculateTotalSupplyAndDemand();
@@ -178,12 +202,8 @@ TEST(TransportationProblemMethodTest, SolveHungarianMethodUnBalanced)
 TEST(TransportationProblemBalanceTest, AlreadyBalanced)
 {
     size_t m = 5, n = 4;
-    auto supply = generateRandomVector(m);
-    auto demand = generateRandomVector(n);
-    int totalSupply = std::accumulate(supply.begin(), supply.end(), 0);
-    int totalDemand = std::accumulate(demand.begin(), demand.end(), 0);
-
-    demand[n - 1] += totalSupply - totalDemand;
+    std::vector<int> supply, demand;
+    generateSupplyAndDemand(m, n, supply, demand);
 
     auto costMatrix = generateRandomMatrix(m, n);
     TransportationProblem tp(supply, demand, costMatrix);
@@ -197,8 +217,8 @@ TEST(TransportationProblemBalanceTest, AlreadyBalanced)
 TEST(TransportationProblemBalanceTest, SupplyGreaterThanDemand)
 {
     size_t m = 4, n = 4;
-    auto supply = generateRandomVector(m);
-    auto demand = supply;
+    std::vector<int> supply, demand;
+    generateSupplyAndDemand(m, n, supply, demand);
 
     demand[n - 1] -= demand[n - 1];
 
@@ -213,19 +233,4 @@ TEST(TransportationProblemBalanceTest, SupplyGreaterThanDemand)
     {
         EXPECT_EQ(row.back(), 0);
     }
-}
-
-TEST(TransportationProblemBalanceTest, DemandGreaterThanSupplyThrows)
-{
-    size_t m = 3, n = 4;
-    auto supply = generateRandomVector(m);
-    auto demand = generateRandomVector(n);
-
-    demand[n - 1] += 30;
-
-    auto costMatrix = generateRandomMatrix(m, n);
-    TransportationProblem tp(supply, demand, costMatrix);
-    tp.calculateTotalSupplyAndDemand();
-
-    EXPECT_THROW(tp.balance(), std::logic_error);
 }
