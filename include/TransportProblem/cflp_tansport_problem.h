@@ -3,13 +3,15 @@
 
 #include "TransportProblem/transport_problem.h"
 #include <vector>
+#include <unordered_map>
 
 /**
  * @class CFLPTransportSubproblem
  * @brief Represents the transportation subproblem induced by a solution of the CFLP.
  *
  * Efficiently builds and maintains a transportation problem based on which facilities are open.
- * Allows dynamic mutation by toggling the status of a single facility.
+ * Allows dynamic mutation by toggling the status of a single facility and maintains
+ * global supply/demand tracking with efficient updates.
  */
 class CFLPTransportSubproblem
 {
@@ -36,9 +38,22 @@ public:
     void toggleFacility(int facilityIndex);
 
     /**
-     * @brief Updates the internal transportation problem to reflect current open facilities.
+     * @brief Solves the current transportation subproblem using the Hungarian method.
+     * @return A pair containing the total cost and the assignment matrix mapped to original indices.
      */
-    void updateSubproblem();
+    void solve();
+
+    /**
+     * @brief Returns the current total supply (sum of open facilities' capacities).
+     * @return Total supply value.
+     */
+    int getCurrentTotalSupply() const;
+
+    /**
+     * @brief Returns the current total demand (sum of all client demands).
+     * @return Total demand value.
+     */
+    int getCurrentTotalDemand() const;
 
     /**
      * @brief Access the underlying transportation problem.
@@ -52,11 +67,25 @@ public:
      */
     const std::vector<bool> &getOpenFacilities() const;
 
+    /**
+     * @brief Returns the mapping from subproblem facility indices to original indices.
+     * @return Vector of original indices.
+     */
+    const std::vector<size_t> &getFacilityIndexMap() const;
+
 private:
     std::vector<std::vector<int>> fullCostMatrix_; ///< Full CFLP cost matrix.
     std::vector<int> allCapacities_;               ///< Capacities of all facilities.
     std::vector<int> clientDemands_;               ///< Demands of all clients.
     std::vector<bool> openFacilities_;             ///< Current open/closed status of facilities.
+    std::vector<size_t> facilityIndexMap_;         ///< Maps subproblem indices to original indices
+    std::vector<std::vector<int>> assignmentMatrix_; ///< Current assignment matrix.
+    int totalCost_;                                  ///< Total cost of current assignment.
+    std::vector<int> selectedSupplies;
+    std::vector<std::vector<int>> selectedCosts;
+
+    int totalSupply_;                              ///< Current total supply (sum of open facilities)
+    int totalDemand_;                              ///< Total demand (sum of all clients)
 
     TransportationProblem transportProblem_; ///< Current subproblem (only open facilities).
 
