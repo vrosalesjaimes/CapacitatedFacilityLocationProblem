@@ -128,11 +128,54 @@ private:
      */
     void initializeAssignment();
 
-    void printTransportData(const std::vector<int> &supply,
-                              const std::vector<int> &demand,
-                              const std::vector<std::vector<int>> &costMatrix);
+    struct AgentJobEntry
+    {
+        bool marked;
+        int discr;
+    };
 
-    
+    struct MatrixEntry
+    {
+        int init_cost;
+        int val;
+        int quota;
+        bool starred;
+        bool primed;
+    };
+
+    using HungarianDataStructures = std::tuple<
+        std::vector<AgentJobEntry>,
+        std::vector<AgentJobEntry>,
+        std::vector<std::vector<MatrixEntry>>>;
+
+    void checkBalancedProblem() const;
+    HungarianDataStructures initializeDataStructures(size_t m, size_t n);
+    void preliminarReduction(std::vector<AgentJobEntry> &agents,
+                             std::vector<AgentJobEntry> &jobs,
+                             std::vector<std::vector<MatrixEntry>> &matrix);
+    bool isProblemSolved(const std::vector<AgentJobEntry> &agents,
+                         const std::vector<AgentJobEntry> &jobs) const;
+    void executeStep1(std::vector<AgentJobEntry> &agents,
+                      std::vector<AgentJobEntry> &jobs,
+                      std::vector<std::vector<MatrixEntry>> &matrix);
+    void executeStep2(size_t i0, size_t j0,
+                      std::vector<AgentJobEntry> &agents,
+                      std::vector<AgentJobEntry> &jobs,
+                      std::vector<std::vector<MatrixEntry>> &matrix);
+    void executeStep3(std::vector<AgentJobEntry> &agents,
+                      std::vector<AgentJobEntry> &jobs,
+                      std::vector<std::vector<MatrixEntry>> &matrix);
+    void markAgentAndStarJob(size_t i,
+                             std::vector<AgentJobEntry> &agents,
+                             std::vector<AgentJobEntry> &jobs,
+                             std::vector<std::vector<MatrixEntry>> &matrix);
+    void resetMarks(std::vector<AgentJobEntry> &agents,
+                    std::vector<AgentJobEntry> &jobs,
+                    std::vector<std::vector<MatrixEntry>> &matrix);
+    int findMinimumUnmarkedValue(const std::vector<AgentJobEntry> &agents,
+                                 const std::vector<AgentJobEntry> &jobs,
+                                 const std::vector<std::vector<MatrixEntry>> &matrix) const;
+    void finalizeSolution(const std::vector<std::vector<MatrixEntry>> &matrix);
 };
 
 #endif // TRANSPORTATION_PROBLEM_H
