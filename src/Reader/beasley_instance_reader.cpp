@@ -11,7 +11,7 @@ using namespace std;
  * @param filename The name of the file containing the instance data.
  * @return Instance The read instance.
  */
-Instance BeasleyInstanceReader::readInstance(const string& filename) const {
+CFLPProblem BeasleyInstanceReader::readInstance(const string& filename) const {
     ifstream file(filename);
     if (!file.is_open()) {
         throw runtime_error("Unable to open file");
@@ -27,7 +27,7 @@ Instance BeasleyInstanceReader::readInstance(const string& filename) const {
     }
 
     vector<int> customerDemands(numCustomers);
-    vector<vector<double>> transportationCosts(numFacilities, vector<double>(numCustomers));
+    vector<vector<int>> transportationCosts(numFacilities, vector<int>(numCustomers));
     for (int j = 0; j < numCustomers; ++j) {
         file >> customerDemands[j];
         for (int i = 0; i < numFacilities; ++i) {
@@ -35,9 +35,5 @@ Instance BeasleyInstanceReader::readInstance(const string& filename) const {
         }
     }
 
-    vector<bool> y(numFacilities);
-    vector<vector<int>> x(numFacilities, vector<int>(numCustomers));
-
-
-    return Instance(numFacilities, numCustomers, facilityCapacities, customerDemands, openingCosts, transportationCosts);
+    return CFLPProblem(transportationCosts, facilityCapacities, customerDemands, openingCosts);
 }

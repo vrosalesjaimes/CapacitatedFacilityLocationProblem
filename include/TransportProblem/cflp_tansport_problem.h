@@ -28,6 +28,8 @@ public:
                             const std::vector<int> &demands,
                             const std::vector<bool> &openFacilities);
 
+    CFLPTransportSubproblem();
+
     /// @brief Destructor
     ~CFLPTransportSubproblem() = default;
 

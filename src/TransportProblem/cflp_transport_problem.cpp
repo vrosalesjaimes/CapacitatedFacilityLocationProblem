@@ -53,6 +53,16 @@ CFLPTransportSubproblem::CFLPTransportSubproblem(const std::vector<std::vector<i
     transportProblem_.setTotalSupply(totalSupply_);
 }
 
+CFLPTransportSubproblem::CFLPTransportSubproblem()
+    : fullCostMatrix_(),
+      allCapacities_(),
+      clientDemands_(),
+      openFacilities_(),
+      totalDemand_(0),
+      transportProblem_({{}, {}, {}})
+{
+}
+
 void CFLPTransportSubproblem::toggleFacility(int facilityIndex)
 {
     if (facilityIndex < 0 || facilityIndex >= static_cast<int>(openFacilities_.size()))

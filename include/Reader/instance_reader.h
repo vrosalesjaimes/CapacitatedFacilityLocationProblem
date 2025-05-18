@@ -2,7 +2,7 @@
 #define INSTANCEREADER_H
 
 #include <string>
-#include "CapacitatedFacilityLocationProblem/instance.h"
+#include "CapacitatedFacilityLocationProblem/cflp_problem.h"
 
 using namespace std;
 
@@ -22,7 +22,7 @@ public:
      * @param filename The name of the file containing the instance data.
      * @return Instance The read instance.
      */
-    virtual Instance readInstance(const string& filename) const = 0;
+    virtual CFLPProblem readInstance(const string& filename) const = 0;
 };
 
 #endif // INSTANCEREADER_H

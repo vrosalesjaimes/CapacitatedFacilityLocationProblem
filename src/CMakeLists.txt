@@ -1,6 +1,6 @@
 # Añadir el ejecutable
 add_executable(CapacitatedFacilityLocationProblem main.cpp
-                                                CapacitatedFacilityLocationProblem/instance.cpp
+                                                CapacitatedFacilityLocationProblem/cflp_problem.cpp
                                                 Reader/beasley_instance_reader.cpp
                                                 PLQT/plqt_node.cpp
                                                 PLQT/power_of_two.cpp
@@ -13,7 +13,7 @@ add_executable(CapacitatedFacilityLocationProblem main.cpp
 )
 
 add_library(CapacityFacilityLocationLib STATIC
-                                            CapacitatedFacilityLocationProblem/instance.cpp
+                                            CapacitatedFacilityLocationProblem/cflp_problem.cpp
                                             Reader/beasley_instance_reader.cpp
                                             PLQT/plqt_node.cpp
                                             PLQT/power_of_two.cpp
