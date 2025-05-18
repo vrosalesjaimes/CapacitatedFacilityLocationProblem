@@ -81,8 +81,8 @@ private:
     std::vector<size_t> facilityIndexMap_;         ///< Maps subproblem indices to original indices
     std::vector<std::vector<int>> assignmentMatrix_; ///< Current assignment matrix.
     int totalCost_;                                  ///< Total cost of current assignment.
-    std::vector<int> selectedSupplies;
-    std::vector<std::vector<int>> selectedCosts;
+    std::vector<int> selectedSupplies_;
+    std::vector<std::vector<int>> selectedCosts_;
 
     int totalSupply_;                              ///< Current total supply (sum of open facilities)
     int totalDemand_;                              ///< Total demand (sum of all clients)

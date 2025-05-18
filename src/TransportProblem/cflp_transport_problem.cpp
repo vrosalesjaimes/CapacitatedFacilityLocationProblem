@@ -33,8 +33,8 @@ CFLPTransportSubproblem::CFLPTransportSubproblem(const std::vector<std::vector<i
         }
     }
 
-    std::vector<int> selectedSupplies;
-    std::vector<std::vector<int>> selectedCosts;
+    selectedSupplies_.clear();
+    selectedCosts_.clear();
     facilityIndexMap_.clear();
 
     // Build the subproblem with only open facilities
@@ -42,14 +42,14 @@ CFLPTransportSubproblem::CFLPTransportSubproblem(const std::vector<std::vector<i
     {
         if (openFacilities_[i])
         {
-            selectedSupplies.push_back(allCapacities_[i]);
-            selectedCosts.push_back(fullCostMatrix_[i]);
+            selectedSupplies_.push_back(allCapacities_[i]);
+            selectedCosts_.push_back(fullCostMatrix_[i]);
             facilityIndexMap_.push_back(i);
         }
     }
 
     // Reconstruct the transportation problem
-    transportProblem_ = TransportationProblem(selectedSupplies, clientDemands_, selectedCosts);
+    transportProblem_ = TransportationProblem(selectedSupplies_, clientDemands_, selectedCosts_);
     transportProblem_.setTotalSupply(totalSupply_);
 }
 
@@ -58,31 +58,29 @@ void CFLPTransportSubproblem::toggleFacility(int facilityIndex)
     if (facilityIndex < 0 || facilityIndex >= static_cast<int>(openFacilities_.size()))
         throw std::out_of_range("Invalid facility index");
 
-    // Determine the change in supply
     int supplyChange = openFacilities_[facilityIndex] ? -allCapacities_[facilityIndex] : allCapacities_[facilityIndex];
     totalSupply_ += supplyChange;
-
-    // Update the total supply in the transport problem
-    transportProblem_.setTotalSupply(totalSupply_);
-
-    // Toggle the open facility state
     openFacilities_[facilityIndex] = !openFacilities_[facilityIndex];
 
-    // Update selectedSupplies, selectedCosts, and facilityIndexMap_ based on the facility's new state
     if (openFacilities_[facilityIndex]) {
-        selectedSupplies.push_back(allCapacities_[facilityIndex]);
-        selectedCosts.push_back(fullCostMatrix_[facilityIndex]);
+        selectedSupplies_.push_back(allCapacities_[facilityIndex]);
+        selectedCosts_.push_back(fullCostMatrix_[facilityIndex]);
         facilityIndexMap_.push_back(facilityIndex);
     } else {
         auto it = std::find(facilityIndexMap_.begin(), facilityIndexMap_.end(), facilityIndex);
         if (it != facilityIndexMap_.end()) {
             size_t index = std::distance(facilityIndexMap_.begin(), it);
-            selectedSupplies.erase(selectedSupplies.begin() + index);
-            selectedCosts.erase(selectedCosts.begin() + index);
+            selectedSupplies_.erase(selectedSupplies_.begin() + index);
+            selectedCosts_.erase(selectedCosts_.begin() + index);
             facilityIndexMap_.erase(it);
         }
     }
+
+    transportProblem_ = TransportationProblem(selectedSupplies_, clientDemands_, selectedCosts_);
+    transportProblem_.setTotalSupply(totalSupply_);
+    transportProblem_.setTotalDemand(totalDemand_);
 }
+
 
 void CFLPTransportSubproblem::solve()
 {
