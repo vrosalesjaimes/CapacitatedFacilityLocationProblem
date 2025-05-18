@@ -39,7 +39,42 @@ CFLPTransportSubproblem &CFLPProblem::getSubproblem()
     return subproblem_;
 }
 
-void CFLPProblem::solveTabuSearch()
+const std::vector<std::vector<int>> &CFLPProblem::getCostMatrix() const
 {
-    // Tabu Search implementation to be added here
+    return costMatrix_;
+}
+
+std::vector<std::vector<int>> &CFLPProblem::getCostMatrix()
+{
+    return const_cast<std::vector<std::vector<int>> &>(costMatrix_);
+}
+
+const std::vector<int> &CFLPProblem::getCapacities() const
+{
+    return capacities_;
+}
+
+std::vector<int> &CFLPProblem::getCapacities()
+{
+    return const_cast<std::vector<int> &>(capacities_);
+}
+
+const std::vector<int> &CFLPProblem::getDemands() const
+{
+    return demands_;
+}
+
+std::vector<int> &CFLPProblem::getDemands()
+{
+    return const_cast<std::vector<int> &>(demands_);
+}
+
+const std::vector<double> &CFLPProblem::getOpeningCosts() const
+{
+    return openingCosts_;
+}
+
+std::vector<double> &CFLPProblem::getOpeningCosts()
+{
+    return const_cast<std::vector<double> &>(openingCosts_);
 }

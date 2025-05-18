@@ -20,14 +20,14 @@ public:
      * @param costMatrix Full cost matrix (facilities x clients).
      * @param capacities Vector of facility capacities.
      * @param demands Vector of client demands.
-     * @param initialOpenFacilities Initial open/closed status of facilities.
+     * @param openingCosts Vector of facility opening costs.
      */
     CFLPProblem(const std::vector<std::vector<int>> &costMatrix,
                 const std::vector<int> &capacities,
                 const std::vector<int> &demands,
                 const std::vector<double> &openingCosts);
 
-    /// @brief Destructor.
+    /// Destructor.
     ~CFLPProblem() = default;
 
     /**
@@ -37,14 +37,14 @@ public:
     int getCurrentCost() const;
 
     /**
-     * @brief Sets the current cost.
+     * @brief Sets the current total cost.
      * @param cost New total cost.
      */
     void setCurrentCost(int cost);
 
     /**
      * @brief Returns the best solution found so far.
-     * @return Boolean vector representing open facilities.
+     * @return Constant reference to a boolean vector representing open facilities.
      */
     const std::vector<bool> &getBestSolution() const;
 
@@ -55,15 +55,58 @@ public:
     void setBestSolution(const std::vector<bool> &solution);
 
     /**
-     * @brief Returns the CFLP transport subproblem object.
+     * @brief Returns a reference to the CFLP transport subproblem.
      * @return Reference to CFLPTransportSubproblem instance.
      */
     CFLPTransportSubproblem &getSubproblem();
 
     /**
-     * @brief Performs tabu search to find a near-optimal solution to CFLP.
+     * @brief Returns a const reference to the cost matrix.
+     * @return Cost matrix as const reference.
      */
-    void solveTabuSearch(); // To be implemented
+    const std::vector<std::vector<int>> &getCostMatrix() const;
+
+    /**
+     * @brief Returns a modifiable reference to the cost matrix.
+     * @return Cost matrix as reference.
+     */
+    std::vector<std::vector<int>> &getCostMatrix();
+
+    /**
+     * @brief Returns a const reference to the facility capacities.
+     * @return Capacities vector as const reference.
+     */
+    const std::vector<int> &getCapacities() const;
+
+    /**
+     * @brief Returns a modifiable reference to the facility capacities.
+     * @return Capacities vector as reference.
+     */
+    std::vector<int> &getCapacities();
+
+    /**
+     * @brief Returns a const reference to the client demands.
+     * @return Demands vector as const reference.
+     */
+    const std::vector<int> &getDemands() const;
+
+    /**
+     * @brief Returns a modifiable reference to the client demands.
+     * @return Demands vector as reference.
+     */
+    std::vector<int> &getDemands();
+
+    /**
+     * @brief Returns a const reference to the facility opening costs.
+     * @return Opening costs vector as const reference.
+     */
+    const std::vector<double> &getOpeningCosts() const;
+
+    /**
+     * @brief Returns a modifiable reference to the facility opening costs.
+     * @return Opening costs vector as reference.
+     */
+    std::vector<double> &getOpeningCosts();
 
 private:
     int currentCost_;                                 ///< Current total cost.
@@ -72,7 +115,7 @@ private:
     const std::vector<std::vector<int>> &costMatrix_; ///< Full cost matrix.
     const std::vector<int> &capacities_;              ///< Facility capacities.
     const std::vector<int> &demands_;                 ///< Client demands.
-    const std::vector<double> &openingCosts_;            ///< Facility opening costs.
+    const std::vector<double> &openingCosts_;         ///< Facility opening costs.
 };
 
 #endif // CFLP_PROBLEM_H
