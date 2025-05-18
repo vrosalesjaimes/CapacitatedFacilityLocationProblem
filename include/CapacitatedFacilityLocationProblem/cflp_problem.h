@@ -44,15 +44,15 @@ public:
 
     /**
      * @brief Returns the best solution found so far.
-     * @return Constant reference to a boolean vector representing open facilities.
+     * @return Constant reference to integer vector representing open facilities.
      */
-    const std::vector<bool> &getBestSolution() const;
+    const std::vector<int> &getBestSolution() const;
 
     /**
      * @brief Sets the best solution found so far.
      * @param solution Boolean vector representing open facilities.
      */
-    void setBestSolution(const std::vector<bool> &solution);
+    void setBestSolution(const std::vector<int> &solution);
 
     /**
      * @brief Returns a reference to the CFLP transport subproblem.
@@ -110,7 +110,7 @@ public:
 
 private:
     int currentCost_;                                 ///< Current total cost.
-    std::vector<bool> bestSolution_;                  ///< Best known facility opening solution.
+    std::vector<int> bestSolution_;                  ///< Best known facility opening solution.
     CFLPTransportSubproblem subproblem_;              ///< Current CFLP transport subproblem.
     const std::vector<std::vector<int>> &costMatrix_; ///< Full cost matrix.
     const std::vector<int> &capacities_;              ///< Facility capacities.

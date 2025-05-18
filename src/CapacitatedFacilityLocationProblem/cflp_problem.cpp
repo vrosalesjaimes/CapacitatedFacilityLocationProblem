@@ -24,12 +24,12 @@ void CFLPProblem::setCurrentCost(int cost)
     currentCost_ = cost;
 }
 
-const std::vector<bool> &CFLPProblem::getBestSolution() const
+const std::vector<int> &CFLPProblem::getBestSolution() const
 {
     return bestSolution_;
 }
 
-void CFLPProblem::setBestSolution(const std::vector<bool> &solution)
+void CFLPProblem::setBestSolution(const std::vector<int> &solution)
 {
     bestSolution_ = solution;
 }
