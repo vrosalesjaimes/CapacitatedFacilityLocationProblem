@@ -2,9 +2,6 @@
 add_executable(CapacitatedFacilityLocationProblem main.cpp
                                                 CapacitatedFacilityLocationProblem/instance.cpp
                                                 Reader/beasley_instance_reader.cpp
-                                                Reader/holmberg_instance_reader.cpp
-                                                Reader/tbed_instance_reader.cpp
-                                                Reader/yang_instance_reader.cpp
                                                 PLQT/plqt_node.cpp
                                                 PLQT/power_of_two.cpp
                                                 PLQT/plqt.cpp
@@ -18,9 +15,6 @@ add_executable(CapacitatedFacilityLocationProblem main.cpp
 add_library(CapacityFacilityLocationLib STATIC
                                             CapacitatedFacilityLocationProblem/instance.cpp
                                             Reader/beasley_instance_reader.cpp
-                                            Reader/holmberg_instance_reader.cpp
-                                            Reader/tbed_instance_reader.cpp
-                                            Reader/yang_instance_reader.cpp
                                             PLQT/plqt_node.cpp
                                             PLQT/power_of_two.cpp
                                             PLQT/plqt.cpp
