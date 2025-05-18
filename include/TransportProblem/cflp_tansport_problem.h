@@ -88,11 +88,6 @@ private:
     int totalDemand_;                              ///< Total demand (sum of all clients)
 
     TransportationProblem transportProblem_; ///< Current subproblem (only open facilities).
-
-    /**
-     * @brief Builds the TransportationProblem from current open facilities.
-     */
-    void buildTransportProblem();
 };
 
 #endif // CFLP_TRANSPORT_SUBPROBLEM_H
