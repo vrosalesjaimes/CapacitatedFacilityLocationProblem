@@ -6,7 +6,7 @@
 CFLPTransportSubproblem::CFLPTransportSubproblem(const std::vector<std::vector<int>> &fullCostMatrix,
                                                  const std::vector<int> &capacities,
                                                  const std::vector<int> &demands,
-                                                 const std::vector<bool> &openFacilities)
+                                                 const std::vector<int> &openFacilities)
     : fullCostMatrix_(fullCostMatrix),
       allCapacities_(capacities),
       clientDemands_(demands),
@@ -72,13 +72,17 @@ void CFLPTransportSubproblem::toggleFacility(int facilityIndex)
     totalSupply_ += supplyChange;
     openFacilities_[facilityIndex] = !openFacilities_[facilityIndex];
 
-    if (openFacilities_[facilityIndex]) {
+    if (openFacilities_[facilityIndex])
+    {
         selectedSupplies_.push_back(allCapacities_[facilityIndex]);
         selectedCosts_.push_back(fullCostMatrix_[facilityIndex]);
         facilityIndexMap_.push_back(facilityIndex);
-    } else {
+    }
+    else
+    {
         auto it = std::find(facilityIndexMap_.begin(), facilityIndexMap_.end(), facilityIndex);
-        if (it != facilityIndexMap_.end()) {
+        if (it != facilityIndexMap_.end())
+        {
             size_t index = std::distance(facilityIndexMap_.begin(), it);
             selectedSupplies_.erase(selectedSupplies_.begin() + index);
             selectedCosts_.erase(selectedCosts_.begin() + index);
@@ -90,7 +94,6 @@ void CFLPTransportSubproblem::toggleFacility(int facilityIndex)
     transportProblem_.setTotalSupply(totalSupply_);
     transportProblem_.setTotalDemand(totalDemand_);
 }
-
 
 void CFLPTransportSubproblem::solve()
 {
@@ -109,7 +112,9 @@ void CFLPTransportSubproblem::solve()
         {
             assignmentMatrix_[original_i][j] = subAssign[sub_i][j];
         }
-    }
+    };
+
+    totalCost_ = transportProblem_.getTotalCost();
 }
 
 int CFLPTransportSubproblem::getCurrentTotalSupply() const
@@ -127,7 +132,7 @@ const TransportationProblem &CFLPTransportSubproblem::getTransportProblem() cons
     return transportProblem_;
 }
 
-const std::vector<bool> &CFLPTransportSubproblem::getOpenFacilities() const
+const std::vector<int> &CFLPTransportSubproblem::getOpenFacilities() const
 {
     return openFacilities_;
 }
@@ -135,4 +140,24 @@ const std::vector<bool> &CFLPTransportSubproblem::getOpenFacilities() const
 const std::vector<size_t> &CFLPTransportSubproblem::getFacilityIndexMap() const
 {
     return facilityIndexMap_;
+}
+
+const std::vector<std::vector<int>> &CFLPTransportSubproblem::getAssignmentMatrix() const
+{
+    return assignmentMatrix_;
+}
+
+int CFLPTransportSubproblem::getTotalCost() const
+{
+    return totalCost_;
+}
+
+int CFLPTransportSubproblem::getTotalSupply() const
+{
+    return totalSupply_;
+}
+
+int CFLPTransportSubproblem::getTotalDemand() const
+{
+    return totalDemand_;
 }

@@ -10,8 +10,24 @@ CFLPProblem::CFLPProblem(const std::vector<std::vector<int>> &costMatrix,
       openingCosts_(openingCosts),
       subproblem_()
 {
+}
+
+void CFLPProblem::initializeSubproblem(const std::vector<int> &solution)
+{
+    subproblem_ = CFLPTransportSubproblem(costMatrix_, capacities_, demands_, solution);
     subproblem_.solve();
-    currentCost_ = subproblem_.getTransportProblem().getTotalCost();
+    costOfTransportation_ = subproblem_.getTotalCost();
+    costOfFacilities_ = 0;
+
+    for (size_t i = 0; i < solution.size(); ++i)
+    {
+        if (solution[i] == 1)
+        {
+            costOfFacilities_ += openingCosts_[i];
+        }
+    }
+
+    currentCost_ = costOfFacilities_ + costOfTransportation_;
 }
 
 int CFLPProblem::getCurrentCost() const
@@ -77,4 +93,24 @@ const std::vector<double> &CFLPProblem::getOpeningCosts() const
 std::vector<double> &CFLPProblem::getOpeningCosts()
 {
     return const_cast<std::vector<double> &>(openingCosts_);
+}
+
+int CFLPProblem::getCostOfFacilities() const
+{
+    return costOfFacilities_;
+}
+
+int CFLPProblem::getCostOfTransportation() const
+{
+    return costOfTransportation_;
+}
+
+int CFLPProblem::getTotalDemand() const
+{
+    return totalDemand_;
+}
+
+int CFLPProblem::getCurrentTotalSupply() const
+{
+    return currentTotalSupply_;
 }

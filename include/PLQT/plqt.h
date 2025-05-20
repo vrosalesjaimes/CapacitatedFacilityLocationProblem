@@ -28,6 +28,8 @@ public:
      */
     PLQT(int dim, PLQTNode* root);
 
+    PLQT();
+
     /**
      * @brief Destructor. Frees memory of the tree.
      */

@@ -13,6 +13,11 @@ PLQT::PLQT(int dim, PLQTNode *root) : dimension(dim), root(root), powerOfTwo(0)
     powerOfTwo = PowerOfTwo(dim);
 }
 
+PLQT::PLQT() : dimension(0), root(nullptr), powerOfTwo(0)
+{
+    // Default constructor
+}
+
 PLQT::~PLQT()
 {
     delete root;

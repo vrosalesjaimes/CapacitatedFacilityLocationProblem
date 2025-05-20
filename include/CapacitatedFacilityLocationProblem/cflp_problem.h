@@ -108,14 +108,28 @@ public:
      */
     std::vector<double> &getOpeningCosts();
 
+    /**
+     * @brief Initializes the subproblem with a given solution.
+     */
+    void initializeSubproblem(const std::vector<int> &solution);
+
+    int getCostOfFacilities() const;
+    int getCostOfTransportation() const;
+    int getTotalDemand() const;
+    int getCurrentTotalSupply() const;
+    void setCurrentTotalSupply(int supply);
 private:
-    int currentCost_;                                 ///< Current total cost.
-    std::vector<int> bestSolution_;                  ///< Best known facility opening solution.
-    CFLPTransportSubproblem subproblem_;              ///< Current CFLP transport subproblem.
-    const std::vector<std::vector<int>> &costMatrix_; ///< Full cost matrix.
-    const std::vector<int> &capacities_;              ///< Facility capacities.
-    const std::vector<int> &demands_;                 ///< Client demands.
-    const std::vector<double> &openingCosts_;         ///< Facility opening costs.
+    int currentCost_;                                                   ///< Current total cost.
+    std::vector<int> bestSolution_;                                     ///< Best known facility opening solution.
+    CFLPTransportSubproblem subproblem_;                                ///< Current CFLP transport subproblem.
+    const std::vector<std::vector<int>> &costMatrix_;                   ///< Full cost matrix.
+    const std::vector<int> &capacities_;                                ///< Facility capacities.
+    const std::vector<int> &demands_;                                   ///< Client demands.
+    const std::vector<double> &openingCosts_;                           ///< Facility opening costs.
+    int costOfFacilities_ = 0;                                          ///< Cost of opening facilities.
+    int costOfTransportation_ = 0;                                      ///< Cost of transportation.
+    int totalDemand_ = accumulate(demands_.begin(), demands_.end(), 0); ///< Total demand.
+    int currentTotalSupply_ = 0;                                        ///< Current total supply (sum of open facilities' capacities).
 };
 
 #endif // CFLP_PROBLEM_H

@@ -114,6 +114,11 @@ public:
      */
     void calculateTotalSupplyAndDemand();
 
+    int getTotalCost() const
+    {
+        return totalCost_;
+    }
+
 private:
     std::vector<int> supply_;                        ///< Vector of supply values.
     std::vector<int> demand_;                        ///< Vector of demand values.

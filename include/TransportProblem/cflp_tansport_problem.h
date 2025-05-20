@@ -21,12 +21,12 @@ public:
      * @param fullCostMatrix Complete CFLP cost matrix (facilities x clients).
      * @param capacities Vector of facility capacities.
      * @param demands Vector of client demands.
-     * @param openFacilities Boolean vector indicating which facilities are initially open.
+     * @param openFacilities integer vector indicating which facilities are initially open.
      */
     CFLPTransportSubproblem(const std::vector<std::vector<int>> &fullCostMatrix,
                             const std::vector<int> &capacities,
                             const std::vector<int> &demands,
-                            const std::vector<bool> &openFacilities);
+                            const std::vector<int> &openFacilities);
 
     CFLPTransportSubproblem();
 
@@ -65,9 +65,9 @@ public:
 
     /**
      * @brief Returns the current open/closed status of facilities.
-     * @return Boolean vector of facility statuses.
+     * @return Integer vector of facility statuses.
      */
-    const std::vector<bool> &getOpenFacilities() const;
+    const std::vector<int> &getOpenFacilities() const;
 
     /**
      * @brief Returns the mapping from subproblem facility indices to original indices.
@@ -75,11 +75,32 @@ public:
      */
     const std::vector<size_t> &getFacilityIndexMap() const;
 
+    const std::vector<std::vector<int>> &getAssignmentMatrix() const
+    {
+        return assignmentMatrix_;
+    }
+
+    int getTotalCost() const
+    {
+        return totalCost_;
+    }
+    
+
+    int getTotalSupply() const
+    {
+        return totalSupply_;
+    }
+
+    int getTotalDemand() const
+    {
+        return totalDemand_;
+    }
+
 private:
     std::vector<std::vector<int>> fullCostMatrix_; ///< Full CFLP cost matrix.
     std::vector<int> allCapacities_;               ///< Capacities of all facilities.
     std::vector<int> clientDemands_;               ///< Demands of all clients.
-    std::vector<bool> openFacilities_;             ///< Current open/closed status of facilities.
+    std::vector<int> openFacilities_;             ///< Current open/closed status of facilities.
     std::vector<size_t> facilityIndexMap_;         ///< Maps subproblem indices to original indices
     std::vector<std::vector<int>> assignmentMatrix_; ///< Current assignment matrix.
     int totalCost_;                                  ///< Total cost of current assignment.
