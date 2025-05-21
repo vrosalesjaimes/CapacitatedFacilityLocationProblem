@@ -80,22 +80,11 @@ public:
         return assignmentMatrix_;
     }
 
-    int getTotalCost() const
-    {
-        return totalCost_;
-    }
+    int getTotalCost() const;
     
+    int getTotalSupply() const;
 
-    int getTotalSupply() const
-    {
-        return totalSupply_;
-    }
-
-    int getTotalDemand() const
-    {
-        return totalDemand_;
-    }
-
+    int getTotalDemand() const;
 private:
     std::vector<std::vector<int>> fullCostMatrix_; ///< Full CFLP cost matrix.
     std::vector<int> allCapacities_;               ///< Capacities of all facilities.

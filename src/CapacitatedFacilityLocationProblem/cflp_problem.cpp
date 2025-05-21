@@ -1,5 +1,6 @@
 #include "CapacitatedFacilityLocationProblem/cflp_problem.h"
 #include "TransportProblem/cflp_tansport_problem.h"
+#include <numeric>
 
 CFLPProblem::CFLPProblem(const std::vector<std::vector<int>> &costMatrix,
                          const std::vector<int> &capacities,
@@ -10,6 +11,7 @@ CFLPProblem::CFLPProblem(const std::vector<std::vector<int>> &costMatrix,
       openingCosts_(openingCosts),
       subproblem_()
 {
+    totalDemand_ = accumulate(demands.begin(), demands.end(), 0);
 }
 
 void CFLPProblem::initializeSubproblem(const std::vector<int> &solution)
@@ -24,6 +26,16 @@ void CFLPProblem::initializeSubproblem(const std::vector<int> &solution)
         if (solution[i] == 1)
         {
             costOfFacilities_ += openingCosts_[i];
+        }
+    }
+
+    currentTotalSupply_ = 0;
+
+    for (size_t i = 0; i < solution.size(); ++i)
+    {
+        if (solution[i] == 1)
+        {
+            currentTotalSupply_ += capacities_[i];
         }
     }
 
@@ -113,4 +125,26 @@ int CFLPProblem::getTotalDemand() const
 int CFLPProblem::getCurrentTotalSupply() const
 {
     return currentTotalSupply_;
+}
+
+void CFLPProblem::toggleFacility(int facilityIndex)
+{
+    // Actualización de oferta total.
+    if(bestSolution_[facilityIndex] == 1){
+        bestSolution_[facilityIndex] = 0;
+        currentTotalSupply_ -= capacities_[facilityIndex];
+        costOfFacilities_ -= openingCosts_[facilityIndex];
+    }
+    else{
+        bestSolution_[facilityIndex] = 1;
+        currentTotalSupply_ += capacities_[facilityIndex];
+        costOfFacilities_ += openingCosts_[facilityIndex];
+    }
+
+    subproblem_.toggleFacility(facilityIndex);
+    subproblem_.solve();
+
+    costOfTransportation_ = subproblem_.getTotalCost();
+    currentCost_ = costOfFacilities_ + costOfTransportation_;
+    currentTotalSupply_ = subproblem_.getCurrentTotalSupply();
 }

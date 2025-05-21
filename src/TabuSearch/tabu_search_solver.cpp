@@ -10,6 +10,16 @@
 
 using namespace std;
 
+namespace
+{
+    const unsigned int seed = 12345;
+
+    std::mt19937 gen(seed);
+
+    std::uniform_int_distribution<int> dist_l0(l0_l, l0_u);
+    std::uniform_int_distribution<int> dist_l1(l1_l, l1_u);
+}
+
 TabuSearchSolver::TabuSearchSolver(CFLPProblem &problem)
     : problem(problem), m(problem.getCapacities().size())
 {
@@ -86,13 +96,13 @@ void TabuSearchSolver::initialize()
     const std::vector<int> &a = problem.getCapacities();
     const std::vector<int> &b = problem.getDemands();
 
-
     // Abrir instalaciones hasta que la capacidad cubra la demanda total
     y.assign(m, 0);
     double total_demand = std::accumulate(b.begin(), b.end(), 0.0);
     double total_capacity = 0.0;
 
-    for (int i : I3_) {
+    for (int i : I3_)
+    {
         y[i] = 1;
         total_capacity += a[i];
         if (total_capacity >= total_demand)
@@ -104,55 +114,51 @@ void TabuSearchSolver::initialize()
     z0 = problem.getCurrentCost();
     z00 = z0;
 
+    l0 = dist_l0(gen);
+    l1 = dist_l1(gen);
+
+    for (int i = 0; i < m; ++i)
+    {
+        if (y[i] == 0)
+        {
+            t[i] = -l0;
+            h[i] = 0;
+        }
+        else
+        {
+            t[i] = -l1;
+            h[i] = t[i];
+        }
+    }
+
     y_best = y;
     m1 = std::count(y.begin(), y.end(), 1);
-    resetTabuLengths();
     plqt_ = PLQT(m, new PLQTNode(y));
 }
 
 void TabuSearchSolver::mainSearchProcess()
 {
-    while (true)
+    evaluateNeighborhood();
+
+    if (alpha1 * m < k0)
     {
-        // 1. Generar todos los movimientos candidatos
-        vector<int> candidates;
-        for (int i = 0; i < m; ++i)
+        // Step5
+    }
+    else
+    {
+        if (!isTabu(bestFacility))
         {
-            if (!isTabu(i) || aspirationCriterion(computeDeltaZ(i), z0))
-            {
-                candidates.push_back(i);
-            }
+            executeMove(bestFacility);
         }
-
-        if (candidates.empty())
-            break;
-
-        // 2. Elegir el mejor movimiento
-        int bestMove = -1;
-        int bestDelta = numeric_limits<int>::max();
-
-        for (int i : candidates)
+        else
         {
-            int delta = computeDeltaZ(i);
-            if (delta < bestDelta)
+            if (aspirationCriterion(computeDeltaZ(bestFacility)))
             {
-                bestDelta = delta;
-                bestMove = i;
-            }
-        }
-
-        // 3. Ejecutar el movimiento
-        if (bestMove != -1)
-        {
-            executeMove(bestMove);
-            c++;
-            if (/* criterio de parada */ false)
-                break;
-
-            if (c >= C)
-            {
-                intensification();
-                c = 0;
+                executeMove(bestFacility);
+                mainSearchProcess();
+            }else {
+                // cambiar deltaz mejor
+                // Step 3
             }
         }
     }
@@ -160,22 +166,45 @@ void TabuSearchSolver::mainSearchProcess()
 
 void TabuSearchSolver::executeMove(int i)
 {
-    // Alternar apertura/cierre
-    y[i] = 1 - y[i];
-
-    // TODO: Recalcular asignación con el nuevo y usando CFLPTransportSubproblem o TransportationProblem
-    // y actualizar z0 con el nuevo costo total
-
-    if (z0 < z00)
+    if (y[i] == 1)
     {
-        z00 = z0;
-        y_best = y;
-        k0 = k;
+        m1--;
+    }
+    else
+    {
+        m1++;
     }
 
     t[i] = k;
     k++;
-    addToPLQT(y);
+
+    if (y[i] == 1)
+    {
+        h[i] = h[i] + k - t[i];
+    }
+
+    problem.toggleFacility(i);
+    zk = problem.getCurrentCost();
+
+    if (zk < z0)
+    {
+        z0 = zk;
+        k0 = k;
+    }
+
+    if (z0 < z00)
+    {
+        z00 = z0;
+    }
+
+    if (k - k0 < (alpha1 - alpha2) * m)
+    {
+        // Step 2
+    }
+    else
+    {
+        // Step origen
+    }
 }
 
 bool TabuSearchSolver::isTabu(int i)
@@ -183,138 +212,29 @@ bool TabuSearchSolver::isTabu(int i)
     return (k - t[i]) <= h[i];
 }
 
-bool TabuSearchSolver::aspirationCriterion(int deltaZ, int currentZ)
+bool TabuSearchSolver::aspirationCriterion(int deltaZ)
 {
-    return (currentZ + deltaZ) < z00;
+    return (zk + deltaZ) < z0;
 }
 
-int TabuSearchSolver::computeDeltaZ(int i)
+void TabuSearchSolver::evaluateNeighborhood()
 {
-    // 1. Si la solución ya ha sido visitada, retorna infinito
-
-    std::vector<int> currentPartition = y;
-    currentPartition[i] = 1 - currentPartition[i]; // Alternar apertura/cierre
-
-    if (plqt_.search(currentPartition) != nullptr)
+    int startIndex = ((k - 1) * bar_m) % m;
+    for (int i = 0; i < bar_m; ++i)
     {
-        return std::numeric_limits<int>::max(); // cota infinita
+        int index = (startIndex + i) % m;
+        bar_I.push_back(index);
     }
 
-    // 2. Caso 1: Apertura de instalación (ADD-LO)
-    if (!y[i])
+    bestDelta = numeric_limits<int>::max();
+
+    for (int i : bar_I)
     {
-        // (a) Crear lista de ContinuousItem con (c_ij - c_i'j, x_ij) para cada cliente j donde c_i'j < c_ij
-        std::vector<ContinuousItem> items;
-        int remainingCapacity = problem.getCapacities()[i];
-        for (size_t j = 0; j < problem.getDemands().size(); ++j)
+        int delta = computeDeltaZ(i);
+        if (delta < bestDelta)
         {
-            int bestFacility = -1;
-            int currentCost = std::numeric_limits<int>::max();
-            int currentAssignment = 0;
-
-            std::vector<std::vector<int>> currentAssignment_ = problem.getSubproblem().getAssignmentMatrix();
-
-            // Encuentra instalación abierta actualmente asignada a j
-            for (size_t k = 0; k < y.size(); ++k)
-            {
-                if (y[k] && currentAssignment_[k][j] > 0)
-                {
-                    bestFacility = k;
-                    currentCost = problem.getCostMatrix()[k][j];
-                    currentAssignment = currentAssignment_[k][j];
-                    break;
-                }
-            }
-
-            if (bestFacility != -1 && problem.getCostMatrix()[i][j] < currentCost)
-            {
-                double valueIndex = problem.getCostMatrix()[i][j] - currentCost;
-                double weight = currentAssignment;
-                items.emplace_back(valueIndex, weight);
-            }
+            bestDelta = delta;
+            bestFacility = i;
         }
-
-        // (b) Resolver Continuous Knapsack
-        ContinuousKnapsack knapsack(remainingCapacity, items);
-        double totalDelta = 0.0;
-        for (const auto &solution : knapsack.solve())
-        {
-            int itemIndex = solution.first;
-            double quantityTaken = solution.second;
-            totalDelta += quantityTaken * items[itemIndex].getValueIndex();
-        }
-
-        return static_cast<int>(std::round(totalDelta + problem.getOpeningCosts()[i]));
-    }
-
-    // 3. Caso 2: Cierre de instalación (DROP-LO)
-    else
-    {
-        std::vector<std::tuple<int, int, int>> candidateMoves; // (i, j, deltaCost)
-        std::unordered_map<int, int> availableSupply;
-        std::vector<int> affectedClients;
-
-        std::vector<std::vector<int>> currentAssignment_ = problem.getSubproblem().getAssignmentMatrix();
-
-        // (a) Identifica clientes atendidos por i
-        for (size_t j = 0; j < problem.getDemands().size(); ++j)
-        {
-            if (currentAssignment_[i][j] > 0)
-            {
-                affectedClients.push_back(j);
-            }
-        }
-
-        // (b) Identifica otras instalaciones abiertas con capacidad libre
-        for (size_t k = 0; k < y.size(); ++k)
-        {
-            if (k != i && y[k])
-            {
-                int usedCapacity = std::accumulate(currentAssignment_[k].begin(), currentAssignment_[k].end(), 0);
-                int freeCapacity = problem.getCapacities()[k] - usedCapacity;
-                if (freeCapacity > 0)
-                {
-                    availableSupply[k] = freeCapacity;
-                }
-            }
-        }
-
-        // (c) Construye lista de posibles asignaciones (greedy)
-        for (int j : affectedClients)
-        {
-            int demandToAssign = currentAssignment_[i][j];
-            for (const auto &entry : availableSupply)
-            {
-                int k = entry.first;
-                int freeCap = entry.second;
-
-                if (freeCap == 0)
-                    continue;
-
-                int assignQty = std::min(freeCap, demandToAssign);
-                int deltaCost = problem.getCostMatrix()[k][j] - problem.getCostMatrix()[i][j];
-                candidateMoves.emplace_back(k, j, deltaCost);
-                availableSupply[k] -= assignQty;
-                demandToAssign -= assignQty;
-
-                if (demandToAssign == 0)
-                    break;
-            }
-        }
-
-        // (d) Ordena y suma costos (greedy)
-        std::sort(candidateMoves.begin(), candidateMoves.end(),
-                  [](const auto &a, const auto &b)
-                  { return std::get<2>(a) < std::get<2>(b); });
-
-        int totalDelta = 0;
-        for (const auto &[k, j, delta] : candidateMoves)
-        {
-            int amount = currentAssignment_[i][j]; // cuánta demanda hay que mover
-            totalDelta += delta * amount;
-        }
-
-        return totalDelta - problem.getOpeningCosts()[i];
     }
 }
-
