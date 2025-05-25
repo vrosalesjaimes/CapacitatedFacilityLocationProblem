@@ -37,6 +37,7 @@ private:
     int m;                   // número de instalaciones
     int n;                   // número de clientes
     std::vector<int> y;      // solución actual
+    std::vector<int> y_P2;   // solución de referencia para P2
     std::vector<int> y_best; // mejor solución global
     std::vector<int> t;      // tiempo del último cambio
     std::vector<int> h;      // contador de duración
@@ -58,6 +59,7 @@ private:
 
     std::vector<int> bar_I;
     int bestDelta = std::numeric_limits<int>::max();
+    double bestDelta_altering = std::numeric_limits<int>::max();
     std::vector<int> deltaZ_values;
     std::vector<double> deltaZ_values_altering;
 
@@ -84,5 +86,6 @@ private:
     void determineBestFacility();
     void determineBestFacilityAltering();
     void handleTabuMove();
+    void handleTabuMoveAltering();
     void determineNeighborhood();
 };
