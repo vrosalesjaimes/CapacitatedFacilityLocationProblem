@@ -109,6 +109,16 @@ void TabuSearchSolver::initialize()
             break;
     }
 
+    y_P2.assign(m, 0);
+    double total_capacity_P2 = 0.0;
+    for (int i : I2_)
+    {
+        y_P2[i] = 1;
+        total_capacity_P2 += a[i];
+        if (total_capacity_P2 >= total_demand)
+            break;
+    }
+
     problem.initializeSubproblem(y);
 
     z0 = problem.getCurrentCost();
@@ -142,24 +152,48 @@ void TabuSearchSolver::mainSearchProcess()
 
     if (alpha1 * m < k0)
     {
-        // Step5
+        intensification();
     }
     else
     {
-        if (!isTabu(bestFacility))
+        handleTabuMove();
+    }
+}
+
+void TabuSearchSolver::handleTabuMove()
+{
+    determineBestFacility();
+    if (!isTabu(bestFacility))
+    {
+        executeMove(bestFacility);
+        mainSearchProcess();
+    }
+    else
+    {
+
+        if (aspirationCriterion(computeDeltaZ(bestFacility)))
         {
             executeMove(bestFacility);
+            mainSearchProcess();
         }
         else
         {
-            if (aspirationCriterion(computeDeltaZ(bestFacility)))
-            {
-                executeMove(bestFacility);
-                mainSearchProcess();
-            }else {
-                // cambiar deltaz mejor
-                // Step 3
-            }
+            deltaZ_values[bestFacility] = std::numeric_limits<int>::max();
+            handleTabuMove();
+        }
+    }
+}
+
+void TabuSearchSolver::determineBestFacility()
+{
+    bestDelta = numeric_limits<int>::max();
+    bestFacility = -1;
+    for (int i : deltaZ_values)
+    {
+        if (deltaZ_values[i] < bestDelta)
+        {
+            bestDelta = deltaZ_values[i];
+            bestFacility = i;
         }
     }
 }
@@ -186,6 +220,8 @@ void TabuSearchSolver::executeMove(int i)
     problem.toggleFacility(i);
     zk = problem.getCurrentCost();
 
+    plqt_.insert(y);
+
     if (zk < z0)
     {
         z0 = zk;
@@ -199,11 +235,7 @@ void TabuSearchSolver::executeMove(int i)
 
     if (k - k0 < (alpha1 - alpha2) * m)
     {
-        // Step 2
-    }
-    else
-    {
-        // Step origen
+        mainSearchProcess();
     }
 }
 
@@ -217,24 +249,93 @@ bool TabuSearchSolver::aspirationCriterion(int deltaZ)
     return (zk + deltaZ) < z0;
 }
 
-void TabuSearchSolver::evaluateNeighborhood()
+void TabuSearchSolver::determineNeighborhood()
 {
+    bar_I.clear();
     int startIndex = ((k - 1) * bar_m) % m;
     for (int i = 0; i < bar_m; ++i)
     {
         int index = (startIndex + i) % m;
         bar_I.push_back(index);
     }
+}
 
-    bestDelta = numeric_limits<int>::max();
+void TabuSearchSolver::evaluateNeighborhood()
+{
+    determineNeighborhood();
 
+    deltaZ_values.assign(m, 0);
     for (int i : bar_I)
     {
-        int delta = computeDeltaZ(i);
-        if (delta < bestDelta)
+        deltaZ_values[i] = computeDeltaZ(i); // no implementada
+    }
+}
+
+void TabuSearchSolver::intensification()
+{
+    criterionAltering();
+    solutionReconciling(true); // Cambiar segun el ciclo el que se encuentre
+    pathRelinking(y, targetSolution);
+}
+
+void TabuSearchSolver::criterionAltering()
+{
+    // Step 5
+    evaluateNeighborhoodAltering(); // no implementada
+
+    // Step 6 y 7
+    handleTabuMoveAltering(); 
+
+    // Step 8
+    if (k0 <= (alpha1 + alpha2)*m)
+    {
+        mainSearchProcess();
+    }
+    
+}
+
+void TabuSearchSolver::evaluateNeighborhoodAltering()
+{
+    determineNeighborhood();
+
+    deltaZ_values_altering.assign(m, 0);
+    for (int i : bar_I)
+    {
+        deltaZ_values_altering[i] = computeDeltaZ_altering(i); // no implementada
+    }
+}
+
+void TabuSearchSolver::determineBestFacilityAltering()
+{
+    bestDelta_altering = numeric_limits<int>::max();
+    bestFacility = -1;
+    for (int i : deltaZ_values_altering)
+    {
+        if (deltaZ_values_altering[i] < bestDelta_altering)
         {
-            bestDelta = delta;
+            bestDelta_altering = deltaZ_values_altering[i];
             bestFacility = i;
         }
     }
 }
+
+void TabuSearchSolver::handleTabuMoveAltering(){
+    determineBestFacilityAltering();
+    if (!isTabu(bestFacility))
+    {
+        executeMove(bestFacility);
+    }
+    else
+    {
+        if (aspirationCriterion(computeDeltaZ_altering(bestFacility)))
+        {
+            executeMove(bestFacility);
+        }
+        else
+        {
+            deltaZ_values_altering[bestFacility] = std::numeric_limits<int>::max();
+            handleTabuMoveAltering();
+        }
+    }
+}
+

@@ -58,6 +58,8 @@ private:
 
     std::vector<int> bar_I;
     int bestDelta = std::numeric_limits<int>::max();
+    std::vector<int> deltaZ_values;
+    std::vector<double> deltaZ_values_altering;
 
     // Funciones internas
     void initialize();
@@ -70,14 +72,17 @@ private:
     bool isTabu(int i);
     bool aspirationCriterion(int deltaZ);
     int computeDeltaZ(int i);
-    int computeDeltaZ(int i);
     int computeDeltaZ_altering(int i);
     bool isFeasibleToClose(int i);
-    bool isInPLQT(const std::vector<int> &sol);
-    void addToPLQT(const std::vector<int> &sol);
     int selectByDiver1();
     int selectByDiver2();
     void computePriorities();
     bool isFeasible(const std::vector<int> &solution);
-    void evaluateNeighborhood() {}
+    void evaluateNeighborhood();
+    void evaluateNeighborhoodAltering();
+    void criterionAltering();
+    void determineBestFacility();
+    void determineBestFacilityAltering();
+    void handleTabuMove();
+    void determineNeighborhood();
 };
