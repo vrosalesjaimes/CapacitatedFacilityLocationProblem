@@ -38,15 +38,21 @@ private:
     int n;                   // número de clientes
     std::vector<int> y;      // solución actual
     std::vector<int> y_P2;   // solución de referencia para P2
+    std::vector<int> y_P3;   // solución de referencia para P3
     std::vector<int> y_best; // mejor solución global
     std::vector<int> t;      // tiempo del último cambio
     std::vector<int> h;      // contador de duración
     int k = 1, k0 = 1, c = 1, c0 = 0;
     int z0, zk, z00;
     int m1;
-    int bestFacility = -1;           ///< Mejor instalación encontrada
+    int bestFacility = -1; ///< Mejor instalación encontrada
+    int initialIndex;
+    int finalIndex;
     std::vector<double> priorityP2_; ///< Prioridades de instalaciones para P2
     std::vector<double> priorityP3_; ///< Prioridades de instalaciones para P3
+    std::vector<int> reconcilingY;   ///< Solución de reconciliación
+    int currentSupply = 0;           ///< Suministro actual
+    int totalDemand_ = 0;            ///< Total demand (sum of all clients).
 
     // Tabú List y PLQT
     PLQT plqt_;
@@ -67,7 +73,7 @@ private:
     void initialize();
     void mainSearchProcess();
     void intensification();
-    void solutionReconciling(bool useP2);
+    void solutionReconciling();
     void pathRelinking(const std::vector<int> &source, const std::vector<int> &target);
     void diversification();
     void executeMove(int i);
@@ -75,11 +81,8 @@ private:
     bool aspirationCriterion(int deltaZ);
     int computeDeltaZ(int i);
     int computeDeltaZ_altering(int i);
-    bool isFeasibleToClose(int i);
-    int selectByDiver1();
-    int selectByDiver2();
     void computePriorities();
-    bool isFeasible(const std::vector<int> &solution);
+    bool isFeasibleToClose(int i);
     void evaluateNeighborhood();
     void evaluateNeighborhoodAltering();
     void criterionAltering();
@@ -88,4 +91,6 @@ private:
     void handleTabuMove();
     void handleTabuMoveAltering();
     void determineNeighborhood();
+    void advanceIndex();
+    void backIndex();
 };

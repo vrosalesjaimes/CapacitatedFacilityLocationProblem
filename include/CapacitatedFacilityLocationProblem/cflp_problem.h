@@ -120,6 +120,7 @@ public:
     void setCurrentTotalSupply(int supply);
 
     void toggleFacility(int facilityIndex);
+
 private:
     int currentCost_;                                                   ///< Current total cost.
     std::vector<int> bestSolution_;                                     ///< Best known facility opening solution.

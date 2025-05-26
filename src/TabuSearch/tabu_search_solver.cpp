@@ -108,6 +108,7 @@ void TabuSearchSolver::initialize()
         if (total_capacity >= total_demand)
             break;
     }
+    y_P3 = y;
 
     y_P2.assign(m, 0);
     double total_capacity_P2 = 0.0;
@@ -120,6 +121,9 @@ void TabuSearchSolver::initialize()
     }
 
     problem.initializeSubproblem(y);
+
+    currentSupply = problem.getCurrentTotalSupply();
+    totalDemand_ = problem.getTotalDemand();
 
     z0 = problem.getCurrentCost();
     z00 = z0;
@@ -144,6 +148,15 @@ void TabuSearchSolver::initialize()
     y_best = y;
     m1 = std::count(y.begin(), y.end(), 1);
     plqt_ = PLQT(m, new PLQTNode(y));
+}
+
+bool TabuSearchSolver::isFeasibleToClose(int i)
+{
+    int temp = currentSupply;
+
+    temp -= problem.getCapacities()[i];
+
+    return temp >= totalDemand_;
 }
 
 void TabuSearchSolver::mainSearchProcess()
@@ -219,7 +232,7 @@ void TabuSearchSolver::executeMove(int i)
 
     problem.toggleFacility(i);
     zk = problem.getCurrentCost();
-
+    currentSupply = problem.getCurrentTotalSupply();
     plqt_.insert(y);
 
     if (zk < z0)
@@ -274,7 +287,7 @@ void TabuSearchSolver::evaluateNeighborhood()
 void TabuSearchSolver::intensification()
 {
     criterionAltering();
-    solutionReconciling(true); // Cambiar segun el ciclo el que se encuentre
+    solutionReconciling();
     pathRelinking(y, targetSolution);
 }
 
@@ -284,14 +297,13 @@ void TabuSearchSolver::criterionAltering()
     evaluateNeighborhoodAltering(); // no implementada
 
     // Step 6 y 7
-    handleTabuMoveAltering(); 
+    handleTabuMoveAltering();
 
     // Step 8
-    if (k0 <= (alpha1 + alpha2)*m)
+    if (k0 <= (alpha1 + alpha2) * m)
     {
         mainSearchProcess();
     }
-    
 }
 
 void TabuSearchSolver::evaluateNeighborhoodAltering()
@@ -319,7 +331,8 @@ void TabuSearchSolver::determineBestFacilityAltering()
     }
 }
 
-void TabuSearchSolver::handleTabuMoveAltering(){
+void TabuSearchSolver::handleTabuMoveAltering()
+{
     determineBestFacilityAltering();
     if (!isTabu(bestFacility))
     {
@@ -339,3 +352,59 @@ void TabuSearchSolver::handleTabuMoveAltering(){
     }
 }
 
+void TabuSearchSolver::solutionReconciling()
+{
+    // Step 9
+    reconcilingY = c % 2 == 0 ? y_P2 : y_P3;
+
+    initialIndex = 0;
+    finalIndex = m - 1;
+}
+
+void TabuSearchSolver::backIndex()
+{
+    std::vector<int> tempY = y;
+
+    while (tempY[finalIndex] == 0)
+    {
+        finalIndex--;
+    }
+
+    if (initialIndex < finalIndex)
+    {
+        if (isFeasibleToClose(finalIndex))
+        {
+            tempY[finalIndex] = 0;
+            if (plqt_.search(tempY) != nullptr)
+            {
+                finalIndex--;
+            } else{
+                executeMove(finalIndex);
+                backIndex();
+            }
+        }
+    }
+}
+
+void TabuSearchSolver::advanceIndex()
+{
+    std::vector<int> tempY = y;
+
+    while (tempY[initialIndex] == 1)
+    {
+        initialIndex++;
+    }
+
+    if (initialIndex < finalIndex)
+    {
+        tempY[initialIndex] = 1;
+        if (plqt_.search(tempY) != nullptr)
+        {
+            initialIndex++;
+            advanceIndex();
+        } else{
+            executeMove(initialIndex);
+            backIndex();
+        }
+    }
+}
