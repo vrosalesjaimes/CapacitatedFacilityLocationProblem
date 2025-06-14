@@ -359,6 +359,9 @@ void TabuSearchSolver::solutionReconciling()
 
     initialIndex = 0;
     finalIndex = m - 1;
+
+    backIndex();
+    advanceIndex();
 }
 
 void TabuSearchSolver::backIndex()
