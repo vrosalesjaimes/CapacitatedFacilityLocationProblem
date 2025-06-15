@@ -488,3 +488,99 @@ void TabuSearchSolver::pathRelinking(const std::vector<int> &source)
         pathRelinking(y);
     }
 }
+
+void TabuSearchSolver::diversification()
+{
+    if (c > C)
+    {
+        return;
+    }
+
+    c0++;
+
+    if (c0 <= c)
+    {
+
+        std::vector<int> bar_I0, bar_I1;
+        for (int i : bar_I)
+        {
+            if (y[i] == 0)
+                bar_I0.push_back(i);
+            else
+                bar_I1.push_back(i);
+        }
+
+        // Paso 23: seleccionar para cerrar (bar_I1 → Eq. 25)
+        while (!bar_I1.empty())
+        {
+            int i = selectMinFrequency(bar_I1);
+            if (!isFeasibleToClose(i))
+            {
+                break; // Paso 25: no se puede cerrar, vamos a abrir
+            }
+
+            std::vector<int> tempY = y;
+            tempY[i] = 0;
+
+            if (plqt_.search(tempY) == nullptr)
+            {
+                executeMove(i);    // cerrar i
+                diversification(); // continuar desde paso 22
+                return;
+            }
+            else
+            {
+                // eliminar i y probar otro
+                bar_I1.erase(std::remove(bar_I1.begin(), bar_I1.end(), i), bar_I1.end());
+            }
+        }
+
+        // Paso 25: seleccionar para abrir (bar_I0 → Eq. 26)
+        while (!bar_I0.empty())
+        {
+            int i = selectMinFrequency(bar_I0);
+
+            std::vector<int> tempY = y;
+            tempY[i] = 1;
+
+            if (plqt_.search(tempY) == nullptr)
+            {
+                executeMove(i);    // abrir i
+                diversification(); // continuar desde paso 22
+                return;
+            }
+            else
+            {
+                // eliminar i y probar otro
+                bar_I0.erase(std::remove(bar_I0.begin(), bar_I0.end(), i), bar_I0.end());
+            }
+        }
+    }
+    else
+    {
+        c0 = 0; // Reiniciar contador de diversificación
+        c++;
+        z0 = zk;
+        k0 = 1;
+        l0 = dist_l0(gen);   // Recalcular l0
+        l1 = dist_l1(gen);   // Recalcular l1
+        mainSearchProcess(); // Reiniciar el proceso de búsqueda principal
+    }
+}
+
+int TabuSearchSolver::selectMinFrequency(const std::vector<int> &indices)
+{
+    int minIdx = -1;
+    int minVal = std::numeric_limits<int>::max();
+
+    for (int i : indices)
+    {
+        if (t[i] < minVal)
+        {
+            minVal = t[i];
+            minIdx = i;
+        }
+    }
+
+    return minIdx;
+}

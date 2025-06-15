@@ -93,4 +93,6 @@ private:
     void determineNeighborhood();
     void advanceIndex();
     void backIndex();
+    int selectMinFrequency(const std::vector<int>& indices);
+
 };
