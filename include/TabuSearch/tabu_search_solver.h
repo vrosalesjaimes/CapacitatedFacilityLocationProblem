@@ -74,7 +74,7 @@ private:
     void mainSearchProcess();
     void intensification();
     void solutionReconciling();
-    void pathRelinking(const std::vector<int> &source, const std::vector<int> &target);
+    void pathRelinking(const std::vector<int> &source);
     void diversification();
     void executeMove(int i);
     bool isTabu(int i);

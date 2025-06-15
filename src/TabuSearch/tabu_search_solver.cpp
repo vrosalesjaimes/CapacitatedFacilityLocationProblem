@@ -244,6 +244,7 @@ void TabuSearchSolver::executeMove(int i)
     if (z0 < z00)
     {
         z00 = z0;
+        y_best = y;
     }
 
     if (k - k0 < (alpha1 - alpha2) * m)
@@ -288,7 +289,7 @@ void TabuSearchSolver::intensification()
 {
     criterionAltering();
     solutionReconciling();
-    pathRelinking(y, targetSolution);
+    pathRelinking(y);
 }
 
 void TabuSearchSolver::criterionAltering()
@@ -381,7 +382,9 @@ void TabuSearchSolver::backIndex()
             if (plqt_.search(tempY) != nullptr)
             {
                 finalIndex--;
-            } else{
+            }
+            else
+            {
                 executeMove(finalIndex);
                 backIndex();
             }
@@ -405,9 +408,83 @@ void TabuSearchSolver::advanceIndex()
         {
             initialIndex++;
             advanceIndex();
-        } else{
+        }
+        else
+        {
             executeMove(initialIndex);
             backIndex();
         }
+    }
+}
+
+void TabuSearchSolver::pathRelinking(const std::vector<int> &source)
+{
+    targetSolution = y_best;
+    int targetCost = z00;
+
+    std::vector<int> I0T;
+    std::vector<int> I1T;
+
+    for (size_t i = 0; i < source.size(); ++i)
+    {
+        if (source[i] == 0 && targetSolution[i] == 1)
+        {
+            I0T.push_back(i); // Está cerrada en source pero abierta en target
+        }
+        else if (source[i] == 1 && targetSolution[i] == 0)
+        {
+            I1T.push_back(i); // Está abierta en source pero cerrada en target
+        }
+    }
+
+    // Paso 16
+    while (!I1T.empty())
+    {
+        int i = I1T.back();
+        if (isFeasibleToClose(i))
+        {
+            break;
+        }
+
+        std::vector<int> tempY = y;
+        tempY[i] = 0; // Cerrar instalación
+
+        if (plqt_.search(tempY) == nullptr)
+        {
+            I1T.pop_back();
+            continue;
+        }
+
+        I1T.pop_back();
+        executeMove(i);
+    }
+
+    // Paso 18
+    while (!I1T.empty())
+    {
+        int i = I1T.back();
+
+        vector<int> tempY = y;
+        tempY[i] = 1; // Abrir instalación
+
+        if (plqt_.search(tempY) == nullptr)
+        {
+            I1T.pop_back();
+            continue;
+        }
+
+        I1T.pop_back();
+        executeMove(i);
+    }
+
+    if (targetCost < z0)
+    {
+        return;
+    }
+    else if (targetCost < z00)
+    {
+        y = targetSolution;
+        z0 = targetCost;
+        pathRelinking(y);
     }
 }
