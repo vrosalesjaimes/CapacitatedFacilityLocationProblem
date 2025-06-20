@@ -75,11 +75,7 @@ public:
      */
     const std::vector<size_t> &getFacilityIndexMap() const;
 
-    const std::vector<std::vector<int>> &getAssignmentMatrix() const
-    {
-        return assignmentMatrix_;
-    }
-
+    const std::vector<std::vector<int>> &getAssignmentMatrix() const;
     int getTotalCost() const;
     
     int getTotalSupply() const;

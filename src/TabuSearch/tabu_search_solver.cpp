@@ -1,7 +1,7 @@
 #include "TabuSearch/tabu_search_solver.h"
-#include "../PLQT/plqt_node.h"
-#include "../ContinuousKnapsackProblem/continuous_item.h"
-#include "../ContinuousKnapsackProblem/continuous_knapsack.h"
+#include "PLQT/plqt_node.h"
+#include "ContinuousKnapsackProblem/continuous_item.h"
+#include "ContinuousKnapsackProblem/continuous_knapsack.h"
 #include <algorithm>
 #include <cmath>
 #include <chrono>
@@ -34,6 +34,7 @@ void TabuSearchSolver::solve()
 {
     initialize();
     mainSearchProcess();
+
 }
 
 void TabuSearchSolver::computePriorities()

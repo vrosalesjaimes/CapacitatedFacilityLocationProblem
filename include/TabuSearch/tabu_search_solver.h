@@ -1,8 +1,8 @@
 #pragma once
 
-#include "../CapacitatedFacilityLocationProblem/cflp_problem.h"
-#include "../TransportProblem/transport_problem.h"
-#include "../TransportProblem/transport_problem.h"
+#include "CapacitatedFacilityLocationProblem/cflp_problem.h"
+#include "TransportProblem/transport_problem.h"
+#include "TransportProblem/transport_problem.h"
 #include "TabuSearch/tabu_search_solver.h"
 #include "PLQT/plqt.h"
 #include <vector>

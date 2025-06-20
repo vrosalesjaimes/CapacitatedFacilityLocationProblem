@@ -3,6 +3,7 @@
 
 #include "../TransportProblem/cflp_tansport_problem.h"
 #include <vector>
+#include <numeric>
 
 /**
  * @class CFLPProblem
