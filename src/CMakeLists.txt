@@ -9,7 +9,7 @@ add_executable(CapacitatedFacilityLocationProblem main.cpp
                                                 ContinuousKnapsackProblem/continuous_knapsack.cpp
                                                 TransportProblem/transport_problem.cpp
                                                 TransportProblem/cflp_transport_problem.cpp
-                                                TransportProblem/cflp_transport_problem.cpp
+                                                
 )
 
 add_library(CapacityFacilityLocationLib STATIC
@@ -21,7 +21,6 @@ add_library(CapacityFacilityLocationLib STATIC
                                             ContinuousKnapsackProblem/continuous_item.cpp
                                             ContinuousKnapsackProblem/continuous_knapsack.cpp
                                             TransportProblem/transport_problem.cpp
-                                            TransportProblem/cflp_transport_problem.cpp
                                             TransportProblem/cflp_transport_problem.cpp
 )
 

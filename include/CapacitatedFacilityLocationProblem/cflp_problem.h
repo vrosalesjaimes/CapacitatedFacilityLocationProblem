@@ -23,95 +23,34 @@ public:
      * @param demands Vector of client demands.
      * @param openingCosts Vector of facility opening costs.
      */
-    CFLPProblem(const std::vector<std::vector<int>> &costMatrix,
-                const std::vector<int> &capacities,
-                const std::vector<int> &demands,
-                const std::vector<double> &openingCosts);
+    CFLPProblem(std::vector<std::vector<int>> costMatrix,
+                std::vector<int> capacities,
+                std::vector<int> demands,
+                std::vector<double> openingCosts);
 
     /// Destructor.
     ~CFLPProblem() = default;
 
-    /**
-     * @brief Returns the current total cost.
-     * @return Total cost as an integer.
-     */
     int getCurrentCost() const;
-
-    /**
-     * @brief Sets the current total cost.
-     * @param cost New total cost.
-     */
     void setCurrentCost(int cost);
 
-    /**
-     * @brief Returns the best solution found so far.
-     * @return Constant reference to integer vector representing open facilities.
-     */
     const std::vector<int> &getBestSolution() const;
-
-    /**
-     * @brief Sets the best solution found so far.
-     * @param solution Boolean vector representing open facilities.
-     */
     void setBestSolution(const std::vector<int> &solution);
 
-    /**
-     * @brief Returns a reference to the CFLP transport subproblem.
-     * @return Reference to CFLPTransportSubproblem instance.
-     */
     CFLPTransportSubproblem &getSubproblem();
 
-    /**
-     * @brief Returns a const reference to the cost matrix.
-     * @return Cost matrix as const reference.
-     */
     const std::vector<std::vector<int>> &getCostMatrix() const;
-
-    /**
-     * @brief Returns a modifiable reference to the cost matrix.
-     * @return Cost matrix as reference.
-     */
     std::vector<std::vector<int>> &getCostMatrix();
 
-    /**
-     * @brief Returns a const reference to the facility capacities.
-     * @return Capacities vector as const reference.
-     */
     const std::vector<int> &getCapacities() const;
-
-    /**
-     * @brief Returns a modifiable reference to the facility capacities.
-     * @return Capacities vector as reference.
-     */
     std::vector<int> &getCapacities();
 
-    /**
-     * @brief Returns a const reference to the client demands.
-     * @return Demands vector as const reference.
-     */
     const std::vector<int> &getDemands() const;
-
-    /**
-     * @brief Returns a modifiable reference to the client demands.
-     * @return Demands vector as reference.
-     */
     std::vector<int> &getDemands();
 
-    /**
-     * @brief Returns a const reference to the facility opening costs.
-     * @return Opening costs vector as const reference.
-     */
     const std::vector<double> &getOpeningCosts() const;
-
-    /**
-     * @brief Returns a modifiable reference to the facility opening costs.
-     * @return Opening costs vector as reference.
-     */
     std::vector<double> &getOpeningCosts();
 
-    /**
-     * @brief Initializes the subproblem with a given solution.
-     */
     void initializeSubproblem(const std::vector<int> &solution);
 
     int getCostOfFacilities() const;
@@ -123,17 +62,17 @@ public:
     void toggleFacility(int facilityIndex);
 
 private:
-    int currentCost_;                                                   ///< Current total cost.
-    std::vector<int> bestSolution_;                                     ///< Best known facility opening solution.
-    CFLPTransportSubproblem subproblem_;                                ///< Current CFLP transport subproblem.
-    const std::vector<std::vector<int>> &costMatrix_;                   ///< Full cost matrix.
-    const std::vector<int> &capacities_;                                ///< Facility capacities.
-    const std::vector<int> &demands_;                                   ///< Client demands.
-    const std::vector<double> &openingCosts_;                           ///< Facility opening costs.
-    int costOfFacilities_ = 0;                                          ///< Cost of opening facilities.
-    int costOfTransportation_ = 0;                                      ///< Cost of transportation.
-    int totalDemand_ = accumulate(demands_.begin(), demands_.end(), 0); ///< Total demand.
-    int currentTotalSupply_ = 0;                                        ///< Current total supply (sum of open facilities' capacities).
+    int currentCost_;
+    std::vector<int> bestSolution_;
+    CFLPTransportSubproblem subproblem_;
+    std::vector<std::vector<int>> costMatrix_;
+    std::vector<int> capacities_;
+    std::vector<int> demands_;
+    std::vector<double> openingCosts_;
+    int costOfFacilities_ = 0;
+    int costOfTransportation_ = 0;
+    int totalDemand_;
+    int currentTotalSupply_ = 0;
 };
 
 #endif // CFLP_PROBLEM_H

@@ -1,17 +1,20 @@
 #include "CapacitatedFacilityLocationProblem/cflp_problem.h"
 #include "TransportProblem/cflp_tansport_problem.h"
 #include <numeric>
+#include <iostream>
 
-CFLPProblem::CFLPProblem(const std::vector<std::vector<int>> &costMatrix,
-                         const std::vector<int> &capacities,
-                         const std::vector<int> &demands,
-                         const std::vector<double> &openingCosts)
-    : currentCost_(0), costMatrix_(costMatrix),
-      capacities_(capacities), demands_(demands),
-      openingCosts_(openingCosts),
+CFLPProblem::CFLPProblem(std::vector<std::vector<int>> costMatrix,
+                         std::vector<int> capacities,
+                         std::vector<int> demands,
+                         std::vector<double> openingCosts)
+    : currentCost_(0),
+      costMatrix_(std::move(costMatrix)),       // Movemos en lugar de copiar
+      capacities_(std::move(capacities)),       // Movemos en lugar de copiar
+      demands_(std::move(demands)),             // Movemos en lugar de copiar
+      openingCosts_(std::move(openingCosts)),   // Movemos en lugar de copiar
       subproblem_()
 {
-    totalDemand_ = accumulate(demands.begin(), demands.end(), 0);
+    totalDemand_ = std::accumulate(demands_.begin(), demands_.end(), 0);
 }
 
 void CFLPProblem::initializeSubproblem(const std::vector<int> &solution)
@@ -74,7 +77,7 @@ const std::vector<std::vector<int>> &CFLPProblem::getCostMatrix() const
 
 std::vector<std::vector<int>> &CFLPProblem::getCostMatrix()
 {
-    return const_cast<std::vector<std::vector<int>> &>(costMatrix_);
+    return costMatrix_;
 }
 
 const std::vector<int> &CFLPProblem::getCapacities() const
@@ -84,7 +87,7 @@ const std::vector<int> &CFLPProblem::getCapacities() const
 
 std::vector<int> &CFLPProblem::getCapacities()
 {
-    return const_cast<std::vector<int> &>(capacities_);
+    return capacities_;
 }
 
 const std::vector<int> &CFLPProblem::getDemands() const
@@ -94,7 +97,7 @@ const std::vector<int> &CFLPProblem::getDemands() const
 
 std::vector<int> &CFLPProblem::getDemands()
 {
-    return const_cast<std::vector<int> &>(demands_);
+    return demands_;
 }
 
 const std::vector<double> &CFLPProblem::getOpeningCosts() const
@@ -104,7 +107,7 @@ const std::vector<double> &CFLPProblem::getOpeningCosts() const
 
 std::vector<double> &CFLPProblem::getOpeningCosts()
 {
-    return const_cast<std::vector<double> &>(openingCosts_);
+    return openingCosts_;
 }
 
 int CFLPProblem::getCostOfFacilities() const
@@ -129,13 +132,11 @@ int CFLPProblem::getCurrentTotalSupply() const
 
 void CFLPProblem::toggleFacility(int facilityIndex)
 {
-    // Actualización de oferta total.
-    if(bestSolution_[facilityIndex] == 1){
+    if (bestSolution_[facilityIndex] == 1) {
         bestSolution_[facilityIndex] = 0;
         currentTotalSupply_ -= capacities_[facilityIndex];
         costOfFacilities_ -= openingCosts_[facilityIndex];
-    }
-    else{
+    } else { 
         bestSolution_[facilityIndex] = 1;
         currentTotalSupply_ += capacities_[facilityIndex];
         costOfFacilities_ += openingCosts_[facilityIndex];

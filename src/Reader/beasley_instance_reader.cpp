@@ -35,5 +35,10 @@ CFLPProblem BeasleyInstanceReader::readInstance(const string& filename) const {
         }
     }
 
-    return CFLPProblem(transportationCosts, facilityCapacities, customerDemands, openingCosts);
+    return CFLPProblem(
+        std::move(transportationCosts),
+        std::move(facilityCapacities),
+        std::move(customerDemands),
+        std::move(openingCosts)
+    );
 }
