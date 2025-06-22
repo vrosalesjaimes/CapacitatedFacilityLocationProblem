@@ -14,7 +14,7 @@
 class TabuSearchSolver
 {
 public:
-    TabuSearchSolver(CFLPProblem &problem);
+    TabuSearchSolver(CFLPProblem &problem, unsigned int seed);
 
     void solve();
     std::vector<int> getBestSolution() const;
@@ -23,6 +23,11 @@ public:
 private:
     // Referencia al problema
     CFLPProblem &problem;
+
+    // Generador de números aleatorios y distribuciones
+    std::mt19937 gen_;  // _ para indicar que es miembro
+    std::uniform_int_distribution<int> dist_l0_;
+    std::uniform_int_distribution<int> dist_l1_;
 
     // Parámetros de búsqueda tabú
     int alpha1 = 1;

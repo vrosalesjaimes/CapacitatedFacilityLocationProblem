@@ -10,19 +10,13 @@
 
 using namespace std;
 
-namespace
+
+TabuSearchSolver::TabuSearchSolver(CFLPProblem &problem, unsigned int seed)
+    : problem(problem), m(problem.getCapacities().size()), gen_(seed)
 {
-    const unsigned int seed = 12345;
-
-    std::mt19937 gen(seed);
-
-    std::uniform_int_distribution<int> dist_l0(l0_l, l0_u);
-    std::uniform_int_distribution<int> dist_l1(l1_l, l1_u);
-}
-
-TabuSearchSolver::TabuSearchSolver(CFLPProblem &problem)
-    : problem(problem), m(problem.getCapacities().size())
-{
+    dist_l0_ = std::uniform_int_distribution<int>(l0_l, l0_u);
+    dist_l1_ = std::uniform_int_distribution<int>(l1_l, l1_u);
+    
     y.resize(m, 0);
     y_best.resize(m, 0);
     t.resize(m, 0);
@@ -31,10 +25,19 @@ TabuSearchSolver::TabuSearchSolver(CFLPProblem &problem)
 }
 
 void TabuSearchSolver::solve()
-{
+{   
+    std::cout << "Starting Tabu Search Solver..." << std::endl;
     initialize();
+    std::cout << "Initialization complete." << std::endl;
+    std::cout << "Starting main search process..." << std::endl;
     mainSearchProcess();
-
+    std::cout << "Main search process complete." << std::endl;
+    std::cout << "Starting intensification and diversification..." << std::endl;
+    intensification();
+    std::cout << "Intensification complete." << std::endl;
+    std::cout <<  "Starting diversification..." << std::endl;
+    diversification();
+    std::cout << "Diversification complete." << std::endl;
 }
 
 void TabuSearchSolver::computePriorities()
@@ -99,6 +102,7 @@ void TabuSearchSolver::initialize()
 
     // Abrir instalaciones hasta que la capacidad cubra la demanda total
     y.assign(m, 0);
+    
     double total_demand = std::accumulate(b.begin(), b.end(), 0.0);
     double total_capacity = 0.0;
 
@@ -120,7 +124,7 @@ void TabuSearchSolver::initialize()
         if (total_capacity_P2 >= total_demand)
             break;
     }
-
+    
     problem.initializeSubproblem(y);
 
     currentSupply = problem.getCurrentTotalSupply();
@@ -129,8 +133,8 @@ void TabuSearchSolver::initialize()
     z0 = problem.getCurrentCost();
     z00 = z0;
 
-    l0 = dist_l0(gen);
-    l1 = dist_l1(gen);
+    l0 = dist_l0_(gen_);
+    l1 = dist_l1_(gen_);
 
     for (int i = 0; i < m; ++i)
     {
@@ -563,8 +567,8 @@ void TabuSearchSolver::diversification()
         c++;
         z0 = zk;
         k0 = 1;
-        l0 = dist_l0(gen);   // Recalcular l0
-        l1 = dist_l1(gen);   // Recalcular l1
+        l0 = dist_l0_(gen_);   // Recalcular l0
+        l1 = dist_l1_(gen_);   // Recalcular l1
         mainSearchProcess(); // Reiniciar el proceso de búsqueda principal
     }
 }
@@ -584,4 +588,14 @@ int TabuSearchSolver::selectMinFrequency(const std::vector<int> &indices)
     }
 
     return minIdx;
+}
+
+int TabuSearchSolver::computeDeltaZ(int i)
+{
+    return 0;
+}
+
+int TabuSearchSolver::computeDeltaZ_altering(int i)
+{
+    return 0;
 }

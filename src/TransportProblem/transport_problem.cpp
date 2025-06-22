@@ -22,7 +22,6 @@ TransportationProblem::TransportationProblem(const std::vector<int> &supply,
         if (row.size() != demand_.size())
             throw std::invalid_argument("Each cost matrix row must match demand size.");
     }
-
     initializeAssignment();
 }
 
@@ -415,12 +414,7 @@ int TransportationProblem::getTotalDemand() const
 
 void TransportationProblem::balance()
 {
-    if (totalSupply_ == totalDemand_)
-    {
-        return;
-    }
-
-    if (totalSupply_ < totalDemand_)
+    if (totalSupply_ <= totalDemand_)
     {
         throw std::logic_error("This class only supports total supply >= total demand.");
     }

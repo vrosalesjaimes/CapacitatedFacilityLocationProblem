@@ -9,6 +9,7 @@ add_executable(CapacitatedFacilityLocationProblem main.cpp
                                                 ContinuousKnapsackProblem/continuous_knapsack.cpp
                                                 TransportProblem/transport_problem.cpp
                                                 TransportProblem/cflp_transport_problem.cpp
+                                                TabuSearch/tabu_search_solver.cpp
                                                 
 )
 
@@ -22,6 +23,7 @@ add_library(CapacityFacilityLocationLib STATIC
                                             ContinuousKnapsackProblem/continuous_knapsack.cpp
                                             TransportProblem/transport_problem.cpp
                                             TransportProblem/cflp_transport_problem.cpp
+                                            TabuSearch/tabu_search_solver.cpp
 )
 
 target_include_directories(CapacityFacilityLocationLib PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../include)

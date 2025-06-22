@@ -2,6 +2,7 @@
 #include <stdexcept>
 #include <numeric>
 #include <algorithm>
+#include <iostream>
 
 CFLPTransportSubproblem::CFLPTransportSubproblem(const std::vector<std::vector<int>> &fullCostMatrix,
                                                  const std::vector<int> &capacities,
@@ -11,7 +12,6 @@ CFLPTransportSubproblem::CFLPTransportSubproblem(const std::vector<std::vector<i
       allCapacities_(capacities),
       clientDemands_(demands),
       openFacilities_(openFacilities),
-      totalDemand_(std::accumulate(demands.begin(), demands.end(), 0)),
       transportProblem_({}, {}, {}) // Will be overwritten in buildTransportProblem
 {
     if (fullCostMatrix_.size() != capacities.size())
@@ -24,14 +24,6 @@ CFLPTransportSubproblem::CFLPTransportSubproblem(const std::vector<std::vector<i
     totalDemand_ = std::accumulate(demands.begin(), demands.end(), 0);
     transportProblem_.setTotalDemand(totalDemand_);
     totalSupply_ = 0;
-
-    for (size_t i = 0; i < openFacilities_.size(); ++i)
-    {
-        if (openFacilities_[i])
-        {
-            totalSupply_ += allCapacities_[i];
-        }
-    }
 
     selectedSupplies_.clear();
     selectedCosts_.clear();
@@ -48,9 +40,18 @@ CFLPTransportSubproblem::CFLPTransportSubproblem(const std::vector<std::vector<i
         }
     }
 
+    for (size_t i = 0; i < openFacilities_.size(); ++i)
+    {
+        if (openFacilities_[i])
+        {
+            totalSupply_ += allCapacities_[i];
+        }
+    }
+
     // Reconstruct the transportation problem
     transportProblem_ = TransportationProblem(selectedSupplies_, clientDemands_, selectedCosts_);
     transportProblem_.setTotalSupply(totalSupply_);
+    transportProblem_.calculateTotalSupplyAndDemand();
 }
 
 CFLPTransportSubproblem::CFLPTransportSubproblem()
@@ -104,16 +105,17 @@ void CFLPTransportSubproblem::solve()
     // Get the assignment matrix from the subproblem
     const auto &subAssign = transportProblem_.getAssignmentMatrix();
 
+    assignmentMatrix_.resize(fullCostMatrix_.size(), std::vector<int>(clientDemands_.size(), 0));
+
     // Map the subproblem assignments back to original indices
     for (size_t sub_i = 0; sub_i < subAssign.size(); ++sub_i)
     {
         size_t original_i = facilityIndexMap_[sub_i];
-        for (size_t j = 0; j < subAssign[sub_i].size(); ++j)
+        for (size_t j = 0; j < subAssign[sub_i].size()-1; ++j)
         {
             assignmentMatrix_[original_i][j] = subAssign[sub_i][j];
         }
     };
-
     totalCost_ = transportProblem_.getTotalCost();
 }
 
