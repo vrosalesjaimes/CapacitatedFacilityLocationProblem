@@ -10,6 +10,7 @@ add_executable(CapacitatedFacilityLocationProblem main.cpp
                                                 TransportProblem/transport_problem.cpp
                                                 TransportProblem/cflp_transport_problem.cpp
                                                 TabuSearch/tabu_search_solver.cpp
+                                                util/drop_lo_greedy_approximator.cpp
                                                 
 )
 
@@ -24,6 +25,7 @@ add_library(CapacityFacilityLocationLib STATIC
                                             TransportProblem/transport_problem.cpp
                                             TransportProblem/cflp_transport_problem.cpp
                                             TabuSearch/tabu_search_solver.cpp
+                                            util/drop_lo_greedy_approximator.cpp
 )
 
 target_include_directories(CapacityFacilityLocationLib PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../include)

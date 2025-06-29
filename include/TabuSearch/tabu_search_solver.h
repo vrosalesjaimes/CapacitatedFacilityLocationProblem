@@ -4,6 +4,7 @@
 #include "TransportProblem/transport_problem.h"
 #include "TransportProblem/transport_problem.h"
 #include "TabuSearch/tabu_search_solver.h"
+#include "util/drop_lo_greedy_approximator.h"
 #include "PLQT/plqt.h"
 #include <vector>
 #include <unordered_set>
@@ -58,6 +59,7 @@ private:
     std::vector<int> reconcilingY;   ///< Solución de reconciliación
     int currentSupply = 0;           ///< Suministro actual
     int totalDemand_ = 0;            ///< Total demand (sum of all clients).
+    DropLOGreedyApproximator dropLoGreedy; ///< Aproximador greedy para δ_i′
 
     // Tabú List y PLQT
     PLQT plqt_;
@@ -73,6 +75,7 @@ private:
     double bestDelta_altering = std::numeric_limits<int>::max();
     std::vector<int> deltaZ_values;
     std::vector<double> deltaZ_values_altering;
+    std::vector<int> slackSupply; ///< Slack supply for each facility.
 
     // Funciones internas
     void initialize();
@@ -84,8 +87,8 @@ private:
     void executeMove(int i);
     bool isTabu(int i);
     bool aspirationCriterion(int deltaZ);
-    int computeDeltaZ(int i);
-    int computeDeltaZ_altering(int i);
+    double computeDeltaZ(int i);
+    double computeDeltaZ_altering(int i);
     void computePriorities();
     bool isFeasibleToClose(int i);
     void evaluateNeighborhood();
@@ -99,5 +102,6 @@ private:
     void advanceIndex();
     void backIndex();
     int selectMinFrequency(const std::vector<int>& indices);
-
+    double solveADDLO(int i);
+    void computeSlackSupply();
 };

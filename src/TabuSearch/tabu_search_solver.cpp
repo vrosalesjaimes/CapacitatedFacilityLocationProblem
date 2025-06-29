@@ -2,6 +2,7 @@
 #include "PLQT/plqt_node.h"
 #include "ContinuousKnapsackProblem/continuous_item.h"
 #include "ContinuousKnapsackProblem/continuous_knapsack.h"
+#include "util/drop_lo_greedy_approximator.h"
 #include <algorithm>
 #include <cmath>
 #include <chrono>
@@ -10,13 +11,14 @@
 
 using namespace std;
 
-
 TabuSearchSolver::TabuSearchSolver(CFLPProblem &problem, unsigned int seed)
-    : problem(problem), m(problem.getCapacities().size()), gen_(seed)
+    : problem(problem), m(problem.getCapacities().size()), gen_(seed), dropLoGreedy(problem)
 {
     dist_l0_ = std::uniform_int_distribution<int>(l0_l, l0_u);
     dist_l1_ = std::uniform_int_distribution<int>(l1_l, l1_u);
-    
+
+    ;
+
     y.resize(m, 0);
     y_best.resize(m, 0);
     t.resize(m, 0);
@@ -25,7 +27,7 @@ TabuSearchSolver::TabuSearchSolver(CFLPProblem &problem, unsigned int seed)
 }
 
 void TabuSearchSolver::solve()
-{   
+{
     std::cout << "Starting Tabu Search Solver..." << std::endl;
     initialize();
     std::cout << "Initialization complete." << std::endl;
@@ -35,7 +37,7 @@ void TabuSearchSolver::solve()
     std::cout << "Starting intensification and diversification..." << std::endl;
     intensification();
     std::cout << "Intensification complete." << std::endl;
-    std::cout <<  "Starting diversification..." << std::endl;
+    std::cout << "Starting diversification..." << std::endl;
     diversification();
     std::cout << "Diversification complete." << std::endl;
 }
@@ -102,7 +104,7 @@ void TabuSearchSolver::initialize()
 
     // Abrir instalaciones hasta que la capacidad cubra la demanda total
     y.assign(m, 0);
-    
+
     double total_demand = std::accumulate(b.begin(), b.end(), 0.0);
     double total_capacity = 0.0;
 
@@ -124,7 +126,7 @@ void TabuSearchSolver::initialize()
         if (total_capacity_P2 >= total_demand)
             break;
     }
-    
+
     problem.initializeSubproblem(y);
 
     currentSupply = problem.getCurrentTotalSupply();
@@ -167,6 +169,7 @@ bool TabuSearchSolver::isFeasibleToClose(int i)
 void TabuSearchSolver::mainSearchProcess()
 {
     evaluateNeighborhood();
+    std::cout << "Evaluating neighborhood..." << std::endl;
 
     if (alpha1 * m < k0)
     {
@@ -174,17 +177,23 @@ void TabuSearchSolver::mainSearchProcess()
     }
     else
     {
+        std::cout << "Handling tabu move..." << std::endl;
         handleTabuMove();
+        std::cout << "Handling tabu move..." << std::endl;
     }
 }
 
 void TabuSearchSolver::handleTabuMove()
 {
     determineBestFacility();
+    std::cout << "Determining best facility..." << std::endl;
     if (!isTabu(bestFacility))
     {
+        std::cout << "Best facility is not tabu, executing move..." << std::endl;
         executeMove(bestFacility);
+        std::cout << "Executing move for facility " << bestFacility << std::endl;
         mainSearchProcess();
+        std::cout << "Move executed successfully." << std::endl;
     }
     else
     {
@@ -235,7 +244,9 @@ void TabuSearchSolver::executeMove(int i)
         h[i] = h[i] + k - t[i];
     }
 
+    std::cout << "Executing move for facility " << i << ": " << (y[i] == 1 ? "Closing" : "Opening") << std::endl;
     problem.toggleFacility(i);
+    std::cout << "Facility " << i << " toggled." << std::endl;
     zk = problem.getCurrentCost();
     currentSupply = problem.getCurrentTotalSupply();
     plqt_.insert(y);
@@ -292,8 +303,12 @@ void TabuSearchSolver::evaluateNeighborhood()
 
 void TabuSearchSolver::intensification()
 {
+    std::cout << "Intensification phase started." << std::endl;
+    std::cout << "Criterion altering..." << std::endl;
     criterionAltering();
+    std::cout << "Solution reconciliation..." << std::endl;
     solutionReconciling();
+    std::cout << "Path relinking..." << std::endl;
     pathRelinking(y);
 }
 
@@ -496,6 +511,7 @@ void TabuSearchSolver::pathRelinking(const std::vector<int> &source)
 
 void TabuSearchSolver::diversification()
 {
+    std::cout << "Diversification phase started." << std::endl;
     if (c > C)
     {
         return;
@@ -567,8 +583,8 @@ void TabuSearchSolver::diversification()
         c++;
         z0 = zk;
         k0 = 1;
-        l0 = dist_l0_(gen_);   // Recalcular l0
-        l1 = dist_l1_(gen_);   // Recalcular l1
+        l0 = dist_l0_(gen_); // Recalcular l0
+        l1 = dist_l1_(gen_); // Recalcular l1
         mainSearchProcess(); // Reiniciar el proceso de búsqueda principal
     }
 }
@@ -590,12 +606,134 @@ int TabuSearchSolver::selectMinFrequency(const std::vector<int> &indices)
     return minIdx;
 }
 
-int TabuSearchSolver::computeDeltaZ(int i)
+double TabuSearchSolver::computeDeltaZ(int i)
 {
-    return 0;
+    if (y[i] == 0)
+    {
+        std::vector<int> temp = y;
+        temp[i] = 1; // Abrir instalación i
+
+        if (plqt_.search(temp) != nullptr)
+        {
+            return std::numeric_limits<int>::max(); // Ya está abierta en PLQT
+        }
+        
+        double delta = solveADDLO(i); // Calcular el cambio en el valor objetivo
+        return delta + problem.getOpeningCosts()[i]; // Valor objetivo de abrir la instalación i
+    }
+    else
+    {
+        std::vector<int> temp = y;
+        temp[i] = 0; // cerrar
+
+        if (!isFeasibleToClose(i))
+        {
+            return std::numeric_limits<int>::max();
+        }
+
+        if (plqt_.search(temp) != nullptr)
+        {
+            return std::numeric_limits<int>::max(); 
+        }
+
+        computeSlackSupply(); // Actualizar slackSupply
+        double delta = dropLoGreedy.computeDelta(i, y, problem.getSubproblem().getAssignmentMatrix(), slackSupply);
+
+        return delta - problem.getOpeningCosts()[i]; // Valor objetivo de cerrar la instalación i
+    }
 }
 
-int TabuSearchSolver::computeDeltaZ_altering(int i)
+void TabuSearchSolver::computeSlackSupply()
 {
-    return 0;
+    slackSupply.clear();
+    const std::vector<int> &capacities = problem.getCapacities();
+    const std::vector<std::vector<int>> &assignmentMatrix = problem.getSubproblem().getAssignmentMatrix();
+
+    for (int i = 0; i < m; ++i)
+    {
+        if (y[i] == 1) // solo para instalaciones abiertas
+    {
+        double used = 0.0;
+        for (int j = 0; j < n; ++j)
+        {
+            used += problem.getSubproblem().getAssignmentMatrix()[i][j];
+        }
+        slackSupply[i] = problem.getCapacities()[i] - used;
+    }
+    }
+}
+
+double TabuSearchSolver::solveADDLO(int i)
+{
+    double capacity = problem.getCapacities()[i];
+
+    std::vector<ContinuousItem> items;
+
+    for (int  k = 0; k < m; k++)
+    {
+        if (y[k] == 1)
+        {
+            for(int j = 0; j < n; j++)
+            {
+                double currentFlow = problem.getSubproblem().getAssignmentMatrix()[i][j];
+
+                if (currentFlow > 0)
+                {
+                    double c_ij = problem.getCostMatrix()[i][j];
+                    double c_kj = problem.getCostMatrix()[k][j];
+
+                    if (c_ij < c_kj)
+                    {
+                        double valueIndex = (c_kj - c_ij);
+                        double weight = currentFlow;
+                        items.emplace_back(valueIndex, weight);
+                    }
+                }
+            }
+        }
+    }
+    
+    if (items.empty())
+    {
+        return 0.0; 
+    }
+    
+    ContinuousKnapsack knapsack(capacity, items);
+    auto solution = knapsack.solve();
+    
+    double deltaZ = 0.0;
+
+    for (const auto &pair : solution)
+    {
+        int idx = pair.first;
+        double amount = pair.second;
+
+        deltaZ += amount * items[idx].getValueIndex();
+    }
+
+    return deltaZ;
+}
+
+double TabuSearchSolver::computeDeltaZ_altering(int i)
+{
+    double deltaZ = computeDeltaZ(i);
+    if (deltaZ == std::numeric_limits<int>::max())
+    {
+        return std::numeric_limits<int>::max(); // No se puede abrir/cerrar
+    }
+
+    double averageFixedCost = std::accumulate(problem.getOpeningCosts().begin(), problem.getOpeningCosts().end(), 0.0) / m;
+
+    if (y[i] == 0)
+    {
+        double temp = ((h[i] * (m - m1)) / (k * m)) * averageFixedCost;
+        deltaZ -= temp; // Restar el costo fijo promedio ponderado
+    }
+    else
+    {
+        double temp = (((h[i]-t[i])*(m-m1))/(k*m)) * averageFixedCost;
+        deltaZ += temp; // Sumar el costo fijo promedio ponderado
+    }
+
+    return deltaZ;
 }

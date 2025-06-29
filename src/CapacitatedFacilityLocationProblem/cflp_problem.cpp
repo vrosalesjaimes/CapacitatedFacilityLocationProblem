@@ -8,10 +8,10 @@ CFLPProblem::CFLPProblem(std::vector<std::vector<int>> costMatrix,
                          std::vector<int> demands,
                          std::vector<double> openingCosts)
     : currentCost_(0),
-      costMatrix_(std::move(costMatrix)),       // Movemos en lugar de copiar
-      capacities_(std::move(capacities)),       // Movemos en lugar de copiar
-      demands_(std::move(demands)),             // Movemos en lugar de copiar
-      openingCosts_(std::move(openingCosts)),   // Movemos en lugar de copiar
+      costMatrix_(std::move(costMatrix)),     // Movemos en lugar de copiar
+      capacities_(std::move(capacities)),     // Movemos en lugar de copiar
+      demands_(std::move(demands)),           // Movemos en lugar de copiar
+      openingCosts_(std::move(openingCosts)), // Movemos en lugar de copiar
       subproblem_()
 {
     totalDemand_ = std::accumulate(demands_.begin(), demands_.end(), 0);
@@ -19,6 +19,7 @@ CFLPProblem::CFLPProblem(std::vector<std::vector<int>> costMatrix,
 
 void CFLPProblem::initializeSubproblem(const std::vector<int> &solution)
 {
+    bestSolution_ = solution;
     subproblem_ = CFLPTransportSubproblem(costMatrix_, capacities_, demands_, solution);
     subproblem_.solve();
     costOfTransportation_ = subproblem_.getTotalCost();
@@ -132,18 +133,34 @@ int CFLPProblem::getCurrentTotalSupply() const
 
 void CFLPProblem::toggleFacility(int facilityIndex)
 {
-    if (bestSolution_[facilityIndex] == 1) {
+    std::cout << "Toggling facility at index: " << facilityIndex << std::endl;
+    std::cout << "bestSolution" << std::endl;
+    for (const auto &sol : bestSolution_)
+    {
+        std::cout << sol << " ";
+    }
+    std::cout << std::endl;
+    if (bestSolution_[facilityIndex] == 1)
+    {
+        std::cout << "Facility " << facilityIndex << " is currently open." << std::endl;
+
         bestSolution_[facilityIndex] = 0;
         currentTotalSupply_ -= capacities_[facilityIndex];
         costOfFacilities_ -= openingCosts_[facilityIndex];
-    } else { 
+        std::cout << "Facility " << facilityIndex << " closed." << std::endl;
+    }
+    else
+    {
         bestSolution_[facilityIndex] = 1;
         currentTotalSupply_ += capacities_[facilityIndex];
         costOfFacilities_ += openingCosts_[facilityIndex];
+        std::cout << "Facility " << facilityIndex << " opened." << std::endl;
     }
 
     subproblem_.toggleFacility(facilityIndex);
+    std::cout << "Subproblem toggled for facility " << facilityIndex << "." << std::endl;
     subproblem_.solve();
+    std::cout << "Subproblem solved after toggling facility " << facilityIndex << "." << std::endl;
 
     costOfTransportation_ = subproblem_.getTotalCost();
     currentCost_ = costOfFacilities_ + costOfTransportation_;
